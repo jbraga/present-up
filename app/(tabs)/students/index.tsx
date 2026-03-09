@@ -80,6 +80,8 @@ const StudentCard = memo(({ item, isSelected, selectionMode, onPress, onLongPres
   );
 });
 
+StudentCard.displayName = 'StudentCard';
+
 const StudentsScreen = () => {
   const queryClient = useQueryClient();
   const [query, setQuery] = useState('');
@@ -134,7 +136,7 @@ const StudentsScreen = () => {
             try {
               await deleteStudentsMutation.mutateAsync(Array.from(selectedStudentIds));
               setSelectedStudentIds(new Set());
-            } catch (error) {
+            } catch {
               Alert.alert('Error', 'Unable to delete students. Please try again.');
             }
           },
@@ -304,10 +306,6 @@ const styles = StyleSheet.create({
     paddingTop: spacing.xl,
     gap: spacing.lg,
   },
-  subtitle: {
-    ...typography.bodyMedium,
-    color: palette.onSurfaceVariant,
-  },
   fab: {
     position: 'absolute',
     right: spacing.xl,
@@ -432,32 +430,6 @@ const styles = StyleSheet.create({
     ...typography.bodyMedium,
     color: palette.onSurfaceVariant,
     textAlign: 'center',
-  },
-  centeredContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.lg,
-    paddingHorizontal: spacing.xl,
-  },
-  title: {
-    ...typography.titleLarge,
-    color: palette.onSurface,
-    textAlign: 'center',
-  },
-  primaryButton: {
-    backgroundColor: palette.primary,
-    paddingHorizontal: spacing.xl,
-    paddingVertical: spacing.md,
-    borderRadius: 100,
-  },
-  primaryText: {
-    ...typography.labelLarge,
-    color: palette.onPrimary,
-    fontWeight: '600',
-  },
-  buttonDisabled: {
-    opacity: 0.5,
   },
 });
 

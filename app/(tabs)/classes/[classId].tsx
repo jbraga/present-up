@@ -1,7 +1,7 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { ActivityIndicator, Platform, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Platform, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useAttendanceSummary } from '@features/attendance/hooks/useAttendanceSummary';
@@ -126,8 +126,6 @@ const ClassDetailScreen = () => {
       .map(({ student }) => student ? `${student.firstName} ${student.lastName}` : 'Unknown student')
       .join(', ');
     
-    // Show alert with native Alert
-    const { Alert } = await import('react-native');
     Alert.alert(
       'Remove students from class',
       `Are you sure you want to remove ${count} student${count > 1 ? 's' : ''} from this class?\n\n${studentNames}`,
@@ -143,7 +141,7 @@ const ClassDetailScreen = () => {
                 await unassignStudentMutation.mutateAsync({ classId, studentId });
               }
               setSelectedStudentIds(new Set());
-            } catch (error) {
+            } catch {
               Alert.alert('Error', 'Unable to remove students. Please try again.');
             }
           },

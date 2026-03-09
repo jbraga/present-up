@@ -1,4 +1,5 @@
 import { DataService } from '@core/services/dataService';
+import { logger } from '@core/utils/logger';
 
 import { AttendanceStatus } from '@core/constants/attendance';
 import { AttendanceRecord, RecordAttendanceInput } from '@features/attendance/types/attendance';
@@ -22,7 +23,7 @@ export class AttendanceService {
   }
 
   getClassAttendanceRecords(classId: string): Promise<AttendanceRecord[]> {
-    console.log(`[AttendanceService] getClassAttendanceRecords called for class: ${classId}`);
+    logger.debug('[AttendanceService] Fetching class attendance records', { classId });
     return this.dataService.fetchAttendanceRecords(classId);
   }
 }

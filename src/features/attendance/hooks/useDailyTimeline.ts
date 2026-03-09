@@ -6,8 +6,8 @@ import { attendanceQueryKeys } from '@features/attendance/api/queryKeys';
 import { useAttendanceService } from '@features/attendance/hooks/useAttendanceService';
 import { AttendanceRecord } from '@features/attendance/types/attendance';
 import { classQueryKeys } from '@features/classes/api/queryKeys';
-import { useClassService } from '@features/classes/hooks/useClassService';
 import { useClassList } from '@features/classes/hooks/useClassList';
+import { useClassService } from '@features/classes/hooks/useClassService';
 import { ClassEntity } from '@features/classes/types/class';
 
 const JS_DAY_TO_SCHEDULE_DAY = [
@@ -88,7 +88,7 @@ export const useDailyTimeline = (selectedDate: Date): DailyTimelineResult => {
   const classService = useClassService();
   const attendanceService = useAttendanceService();
 
-  const classes = classListQuery.data ?? [];
+  const classes = useMemo(() => classListQuery.data ?? [], [classListQuery.data]);
   const selectedDayName = JS_DAY_TO_SCHEDULE_DAY[selectedDate.getDay()];
   const selectedDateStr = dateKey(selectedDate);
   const todayStr = dateKey(new Date());

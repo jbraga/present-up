@@ -34,7 +34,7 @@ export const useMonthlyAttendance = (selectedMonth: Date) => {
   const classService = useClassService();
   const attendanceService = useAttendanceService();
 
-  const classes = classListQuery.data ?? [];
+  const classes = useMemo(() => classListQuery.data ?? [], [classListQuery.data]);
   const year = selectedMonth.getFullYear();
   const month = selectedMonth.getMonth();
 

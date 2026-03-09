@@ -2,14 +2,14 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo, useState } from 'react';
 import {
-  ActivityIndicator,
-  Dimensions,
-  FlatList,
-  Pressable,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
+    ActivityIndicator,
+    Dimensions,
+    FlatList,
+    Pressable,
+    StyleSheet,
+    Text,
+    TextInput,
+    View,
 } from 'react-native';
 
 import { ATTENDANCE_STATUS, ATTENDANCE_STATUS_VALUES } from '@core/constants/attendance';
@@ -59,7 +59,13 @@ export const RecordAttendanceDialog = ({
   const classRosterQuery = useClassRoster(hasInitialStudents ? null : (classId || null));
   const studentIds = classRosterQuery.data ?? [];
   const studentsQuery = useStudentsByIds(hasInitialStudents ? [] : studentIds);
-  const students = hasInitialStudents ? initialStudents! : (studentsQuery.data ?? []);
+  const students = useMemo(() => {
+    if (hasInitialStudents) {
+      return initialStudents ?? [];
+    }
+
+    return studentsQuery.data ?? [];
+  }, [hasInitialStudents, initialStudents, studentsQuery.data]);
   const attendanceRecordsQuery = useAttendanceRecords(classId || null);
 
   const attendanceService = useAttendanceService();
@@ -141,7 +147,7 @@ export const RecordAttendanceDialog = ({
       
       setAttendanceStates(initialStates);
     }
-  }, [visible, students.length, existingRecords]);
+  }, [visible, students, existingRecords]);
 
   const handleStatusChange = (studentId: string, status: (typeof ATTENDANCE_STATUS_VALUES)[number]) => {
     setAttendanceStates((prev) => ({

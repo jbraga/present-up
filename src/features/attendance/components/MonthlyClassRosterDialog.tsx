@@ -25,12 +25,13 @@ export const MonthlyClassRosterDialog = ({
   onClose,
 }: MonthlyClassRosterDialogProps) => {
   const studentsQuery = useStudentsByIds(summary?.studentIds ?? []);
-  const students = studentsQuery.data ?? [];
+  const students = studentsQuery.data;
 
   const filteredStudents = useMemo(() => {
-    if (!searchQuery.trim()) return students;
+    const list = students ?? [];
+    if (!searchQuery.trim()) return list;
     const q = searchQuery.toLowerCase();
-    return students.filter(
+    return list.filter(
       (s) => s.firstName.toLowerCase().includes(q) || s.lastName.toLowerCase().includes(q)
     );
   }, [students, searchQuery]);
@@ -50,7 +51,7 @@ export const MonthlyClassRosterDialog = ({
             <Text style={styles.dateLabel}>{summary.totalSessionsRecorded} Sessions</Text>
             <View style={styles.registeredBadge}>
               <MaterialCommunityIcons name="account-group" size={14} color={palette.primary} />
-              <Text style={styles.registeredText}>{students.length} Registered</Text>
+              <Text style={styles.registeredText}>{(students ?? []).length} Registered</Text>
             </View>
           </View>
 

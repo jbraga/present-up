@@ -1,95 +1,82 @@
-# Attendance Management App
+# Present Up
 
-React Native (Expo) application for instructors to manage classes, students, and attendance directly against a Google Sheets backend. The app enforces a 50% minimum attendance policy and surfaces at-risk students each month.
+Present Up is an Expo + React Native app for tracking class attendance.
+
+This MVP is optimized for instructors to:
+
+- create and manage classes
+- register and manage students
+- assign students to classes
+- record attendance by day
+- review monthly attendance summaries
+- generate/share monthly attendance reports
+
+Data is stored locally using SQLite.
 
 ## Tech Stack
 
-- React Native + Expo Router
+- Expo SDK 54 + React Native 0.81
+- Expo Router
 - TypeScript
-- Zustand for state management
-- TanStack Query for data fetching and caching
-- Expo Auth Session + Secure Store for Google OAuth
-- Google Sheets API as the persistence layer
-- Jest + React Native Testing Library for automated tests
+- TanStack Query
+- Expo SQLite
+- React Native Paper-style design tokens (custom theme)
+- Jest + React Native Testing Library
 
 ## Getting Started
 
 ```bash
 npm install
-npm run start       # launches Expo dev server
+npm run start
 ```
 
-### Required Environment Setup
+Then open with:
 
-1. **Google Cloud project**
-    - Enable the Google Sheets API and Google Drive API.
-    - Create OAuth client IDs for Android, iOS, and Web.
-2. **Update `app.json`** with your credentials and sheet meta data:
-
-    ```json
-    "extra": {
-       "environment": "development",
-       "google": {
-          "androidClientId": "<android-client-id>",
-          "iosClientId": "<ios-client-id>",
-          "webClientId": "<web-client-id>"
-       },
-       "sheets": {
-          "spreadsheetId": "<spreadsheet-id>",
-          "classesRange": "Classes!A:G",
-          "studentsRange": "Students!A:I",
-          "rosterRange": "ClassRoster!A:C",
-          "attendanceRange": "Attendance!A:G"
-       }
-    }
-    ```
-
-3. **Spreadsheet structure** (first row = headers):
-
-    - `Classes!A:G` → `ClassId,Name,InstructorEmail,MinAttendanceThreshold,Schedule,CreatedAt,UpdatedAt`
-    - `Students!A:I` → `StudentId,FirstName,LastName,PreferredName,Email,GuardianEmail,PhoneNumber,CreatedAt,UpdatedAt`
-    - `ClassRoster!A:C` → `ClassId,StudentId,AssignedAt`
-    - `Attendance!A:G` → `RecordId,ClassId,StudentId,Date,Status,Notes,RecordedBy`
-
-4. Configure OAuth redirect URIs for Expo (development) and standalone builds as described in the Expo [Google auth guide](https://docs.expo.dev/guides/google-authentication/).
+- `npm run ios`
+- `npm run android`
+- `npm run web`
 
 ## NPM Scripts
 
-- `npm run start` – Expo dev server
-- `npm run android` / `npm run ios` / `npm run web`
-- `npm run lint` / `npm run lint:fix`
-- `npm run test` / `npm run test:watch`
-- `npm run format` / `npm run format:write`
+- `npm run start` — start Expo dev server
+- `npm run ios` — run iOS target
+- `npm run android` — run Android target
+- `npm run web` — run web target
+- `npm run lint` — run ESLint
+- `npm run lint:fix` — apply safe ESLint fixes
+- `npm run test` — run test suite once
+- `npm run test:watch` — run tests in watch mode
+- `npm run format` — check Prettier formatting
+- `npm run format:write` — format codebase with Prettier
 
-## Architecture Overview
+## Project Structure
 
-```
+```text
+app/                  # Expo Router routes/screens
 src/
-   app/            # Global providers and navigation helpers
-   core/           # Config, constants, errors, services shared across features
-   features/
-      auth/         # Google OAuth context, store, and hooks
-      classes/      # Class domain logic, queries, UI
-      students/     # Student management, auto-complete, persistence
-      attendance/   # Attendance recording and reporting flows
-   shared/         # Reusable hooks, utilities, and presentation components
+  application/        # app-level providers
+  core/               # constants, database, shared services, utils
+  features/
+    attendance/       # attendance flows, hooks, reporting
+    classes/          # class CRUD + roster management
+    students/         # student CRUD + search/list flows
+  shared/             # reusable UI and hooks
+  theme/              # design tokens
 ```
 
-- **State & Data**: Zustand handles auth session state. TanStack Query manages Google Sheets data with feature-specific keys.
-- **Services**: `GoogleSheetsService` centralizes REST calls and parsing logic, wrapped by feature services (classes, attendance, students).
-- **UI**: Feature-oriented components live near their logic. Dialogs and list components are reusable and testable.
+## Data Model (SQLite)
 
-## Testing
+Main tables:
 
-```
-npm run test
-```
+- `classes`
+- `students`
+- `class_roster`
+- `attendance_logs`
+- `schema_migrations`
 
-Tests use Jest with `jest-expo` and React Native Testing Library (`src/features/classes/components/__tests__` contains the initial sample).
+Database migrations are executed on app startup.
 
-## Next Steps
+## Notes
 
-- Configure actual Google credentials and sheet IDs.
-- Expand test coverage across hooks and services.
-- Implement offline caching or optimistic updates if instructors require offline access.
-- Wire monthly automation that highlights students falling below the attendance threshold.
+- Current profile is local-only (`src/core/constants/profile.ts`) for MVP workflows.
+- No external API keys are required for local development.

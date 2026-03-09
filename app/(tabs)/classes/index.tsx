@@ -16,7 +16,7 @@ import { ClassEntity } from '@features/classes/types/class';
 import { ScreenHeader } from '@shared/components/ScreenHeader';
 import { SelectionToolbar } from '@shared/components/SelectionToolbar';
 import { StatCard } from '@shared/components/StatCard';
-import { palette, shape, spacing, typography } from '@theme/tokens';
+import { palette, spacing } from '@theme/tokens';
 
 const ClassesListScreen = () => {
   const router = useRouter();
@@ -76,7 +76,7 @@ const ClassesListScreen = () => {
             try {
               await deleteClassesMutation.mutateAsync(Array.from(selectedClassIds));
               setSelectedClassIds(new Set());
-            } catch (error) {
+            } catch {
               Alert.alert('Error', 'Unable to delete classes. Please try again.');
             }
           },
@@ -174,27 +174,6 @@ const styles = StyleSheet.create({
     paddingTop: spacing.xl,
     gap: spacing.lg,
   },
-  bannerWrapper: {
-    marginBottom: spacing.sm,
-  },
-  topBar: {
-    gap: spacing.xs,
-  },
-  topBarEyebrow: {
-    ...typography.labelMedium,
-    color: palette.onSurfaceVariant,
-    textTransform: 'uppercase',
-    letterSpacing: 0.8,
-  },
-  topBarTitle: {
-    ...typography.headlineSmall,
-    color: palette.onSurface,
-    fontWeight: '700',
-  },
-  topBarSubtitle: {
-    ...typography.bodyMedium,
-    color: palette.onSurfaceVariant,
-  },
   statsRow: {
     flexDirection: 'row',
     gap: spacing.sm,
@@ -217,42 +196,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowOffset: { width: 0, height: 8 },
     shadowRadius: 20,
-  },
-  primaryButton: {
-    backgroundColor: palette.primary,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
-    borderRadius: shape.large,
-    shadowColor: palette.shadow,
-    shadowOpacity: 0.15,
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 8,
-    elevation: 2,
-  },
-  primaryText: {
-    ...typography.labelLarge,
-    color: palette.onPrimary,
-    textTransform: 'none',
-  },
-  buttonDisabled: {
-    opacity: 0.6,
-  },
-  centeredContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.lg,
-    paddingHorizontal: spacing.xl,
-  },
-  title: {
-    ...typography.titleLarge,
-    color: palette.onSurface,
-    textAlign: 'center',
-  },
-  subtitle: {
-    ...typography.bodyMedium,
-    color: palette.onSurfaceVariant,
-    textAlign: 'center',
   },
 });
 

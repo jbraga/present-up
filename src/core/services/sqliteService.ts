@@ -113,7 +113,7 @@ export class SQLiteService implements DataService {
     classId: string,
     name: string,
     instructorName: string,
-    schedule: Array<{ dayOfWeek: string; startTime: string; endTime: string }>,
+    schedule: { dayOfWeek: string; startTime: string; endTime: string }[],
     capacity: number,
     minAttendancePercentage: number,
     location?: string,
