@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1c74e9",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#111821",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<title>PresentUp - Class Roster</title>
+<style>
+        body {
+            min-height: max(884px, 100dvh);
+        }#search-toggle:checked ~ #header-title {
+            display: none;
+        }
+        #search-toggle:checked ~ #header-search-bar {
+            display: flex;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased">
+<div class="relative flex min-h-screen w-full flex-col max-w-md mx-auto bg-white dark:bg-background-dark shadow-2xl overflow-hidden border-x border-slate-100 dark:border-slate-800">
+<header class="sticky top-0 z-10 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md px-6 pt-8 pb-4">
+<div class="flex items-center justify-between mb-2">
+<div class="flex items-center gap-2 text-primary cursor-pointer">
+<span class="material-symbols-outlined font-bold text-[20px]">arrow_back</span>
+<span class="text-[10px] font-bold uppercase tracking-widest">Back to Classes</span>
+</div>
+<div class="flex items-center">
+<input class="hidden peer" id="search-toggle" type="checkbox"/>
+<label class="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer" for="search-toggle">
+<span class="material-symbols-outlined text-slate-500 text-[22px]">search</span>
+</label>
+<button class="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+<span class="material-symbols-outlined text-slate-500 text-[22px]">more_vert</span>
+</button>
+</div>
+</div>
+<div class="mt-4 relative h-14 flex items-center">
+<div class="w-full" id="header-title">
+<h1 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">Advanced Ballet</h1>
+<p class="text-slate-500 dark:text-slate-400 mt-1 font-medium text-sm">Manage class roster</p>
+</div>
+<div class="hidden absolute inset-0 w-full items-center" id="header-search-bar">
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">search</span>
+<input class="w-full h-12 pl-11 pr-4 bg-slate-100 dark:bg-slate-800/50 border-none rounded-2xl focus:ring-2 focus:ring-primary/20 text-base font-medium placeholder:text-slate-400 dark:placeholder:text-slate-500" placeholder="Search students..." type="text"/>
+<label class="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 text-slate-400 hover:text-slate-600 cursor-pointer" for="search-toggle">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</label>
+</div>
+</div>
+</div>
+</header>
+<div class="px-6 py-4">
+<div class="bg-primary/5 dark:bg-primary/10 border border-primary/10 rounded-2xl p-4 flex justify-between items-center">
+<div class="flex flex-col">
+<span class="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest">Enrolled Students</span>
+<span class="text-2xl font-bold text-primary">24 / 30</span>
+</div>
+<div class="h-12 w-12 bg-primary rounded-full flex items-center justify-center text-white shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-xl">group</span>
+</div>
+</div>
+</div>
+<main class="flex-1 px-6 pb-24 overflow-y-auto">
+<div class="space-y-3 mt-2">
+<div class="flex items-center gap-4 bg-white dark:bg-background-dark p-3 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow">
+<div class="relative">
+<div class="h-14 w-14 rounded-full bg-cover bg-center border border-slate-100 dark:border-slate-800" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD_tszv9rkiA9H1RRUId_2z-N1_YBZvblcWM-nSIi0Wu04BEGp4g6yxF6yF29tU5KhsikiQ9vVfJ4mCs3GX0ye5LO5BZ3U8YzKmixuu1ApF3JhHbZKeORPAUYJdoE_DWnUULIhWU4FVzKKRLh2p-4REuAiFBgSvn2N6c75f0XLCRZLsnzF5J2HumTQfX0IMzUjTGLy9Bvre61_c-n8lhW62gZZ-QRKb4nSJKPom-VRGqvvBNR8gvPjVGPeRYZNO1oVcgU9IoERfM4Y')"></div>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-base font-semibold text-slate-900 dark:text-slate-100 truncate leading-tight">Alice Thompson</p>
+<div class="flex items-center gap-1.5 mt-0.5">
+<span class="text-slate-400 dark:text-slate-500 text-xs">
+<span class="font-bold text-sm text-slate-800 dark:text-slate-200">14/15</span> Present
+                            </span>
+</div>
+</div>
+<button class="shrink-0 p-3 text-slate-300 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-full transition-all">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+</button>
+</div>
+<div class="flex items-center gap-4 bg-rose-500/5 dark:bg-rose-500/10 p-3 rounded-2xl border border-rose-500/10 dark:border-rose-500/20 shadow-sm hover:shadow-md transition-shadow">
+<div class="h-14 w-14 rounded-full bg-cover bg-center border-2 border-rose-500/10" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuApV1UYgLwhmPMRjejU5Nfvy0kir3Vx6gwpMNfsc1jU582VlTLx5m8FNCWbTsJg0trwIGIEJuKAbk8JL453ZN-rHMAuLkOgLmPbAvQhyc22Q2AWW_f7EA8X09I9kp-Iy0aHw1D9QNRd83uUyNCTd0-SKA4YnvPl09iIYp3SrMDKtOR_0_5qQFxsUW-NDO7dWZkGO_qzXESRMVlfpA0CFGQyloZ_nkElEQ7DDv42631PNC2WcYrz0Gb3pAXS_s6z2LHU8hc_OWaavVA')"></div>
+<div class="flex-1 min-w-0">
+<p class="text-base font-semibold text-slate-900 dark:text-slate-100 truncate leading-tight">Benjamin Reed</p>
+<div class="flex items-center gap-1.5 mt-0.5">
+<span class="text-slate-400 dark:text-slate-500 text-xs">
+<span class="font-bold text-sm text-slate-800 dark:text-slate-200">8/15</span> Present
+                            </span>
+</div>
+</div>
+<button class="shrink-0 p-3 text-rose-300 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-full transition-all">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+</button>
+</div>
+<div class="flex items-center gap-4 bg-white dark:bg-background-dark p-3 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow">
+<div class="h-14 w-14 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400 font-bold text-lg border border-slate-100 dark:border-slate-800">
+                        CH
+                    </div>
+<div class="flex-1 min-w-0">
+<p class="text-base font-semibold text-slate-900 dark:text-slate-100 truncate leading-tight">Catherine Huang</p>
+<div class="flex items-center gap-1.5 mt-0.5">
+<span class="text-slate-400 dark:text-slate-500 text-xs">
+<span class="font-bold text-sm text-slate-800 dark:text-slate-200">12/15</span> Present
+                            </span>
+</div>
+</div>
+<button class="shrink-0 p-3 text-slate-300 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-full transition-all">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+</button>
+</div>
+<div class="flex items-center gap-4 bg-white dark:bg-background-dark p-3 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow">
+<div class="h-14 w-14 rounded-full bg-cover bg-center border border-slate-100 dark:border-slate-800" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCVkGxOxLyIJ1a0gkjO1jUYV2ikUR2T5RJUjHV8OjxuYToJ-5KAi3Rptbol_6jHQOj3ppJzLt4B6XIWFUNc6rmJ6KA35x5-1ZZPbZITo1XpN3HOxBNdytOCz-300JW0U_Ps7nZtuU3Ym6cXY6y4Df7iLqLKfoyC93488m-7zRZCS-Kc9lgM2PtpwA2TtE-i-KgIzidZsS4muLJGoTj5o1ijbHPLZAScHLgCWMgoAX7Eax5qrTOwTCwv4CaJCMAlD-53Q_sza8_erXw')"></div>
+<div class="flex-1 min-w-0">
+<p class="text-base font-semibold text-slate-900 dark:text-slate-100 truncate leading-tight">Diana Prince</p>
+<div class="flex items-center gap-1.5 mt-0.5">
+<span class="text-slate-400 dark:text-slate-500 text-xs">
+<span class="font-bold text-sm text-slate-800 dark:text-slate-200">15/15</span> Present
+                            </span>
+</div>
+</div>
+<button class="shrink-0 p-3 text-slate-300 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-full transition-all">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+</button>
+</div>
+<div class="flex items-center gap-4 bg-white dark:bg-background-dark p-3 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow">
+<div class="h-14 w-14 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400 font-bold text-lg border border-slate-100 dark:border-slate-800">
+                        EK
+                    </div>
+<div class="flex-1 min-w-0">
+<p class="text-base font-semibold text-slate-900 dark:text-slate-100 truncate leading-tight">Ethan Knight</p>
+<div class="flex items-center gap-1.5 mt-0.5">
+<span class="text-slate-400 dark:text-slate-500 text-xs">
+<span class="font-bold text-sm text-slate-800 dark:text-slate-200">4/5</span> Present
+                            </span>
+</div>
+</div>
+<button class="shrink-0 p-3 text-slate-300 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-full transition-all">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+</button>
+</div>
+</div>
+</main>
+<button class="absolute bottom-24 right-6 h-14 w-14 bg-primary text-white rounded-2xl shadow-xl shadow-primary/30 flex items-center justify-center hover:scale-105 transition-transform active:scale-95 z-20">
+<span class="material-symbols-outlined text-2xl">person_add</span>
+</button>
+<nav class="absolute bottom-0 w-full bg-white/90 dark:bg-slate-900/90 backdrop-blur-lg border-t border-slate-100 dark:border-slate-800 px-6 py-4 flex justify-between items-center z-30">
+<a class="flex flex-col items-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined text-[24px] font-variation-fill-1">calendar_today</span>
+<span class="text-[9px] font-bold uppercase tracking-widest">Classes</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[24px]">group</span>
+<span class="text-[9px] font-bold uppercase tracking-widest">Students</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[24px]">task_alt</span>
+<span class="text-[9px] font-bold uppercase tracking-widest">Attendance</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[24px]">settings</span>
+<span class="text-[9px] font-bold uppercase tracking-widest">More</span>
+</a>
+</nav>
+</div>
+<div class="fixed top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/5 rounded-full blur-3xl -z-10"></div>
+<div class="fixed bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-primary/5 rounded-full blur-3xl -z-10"></div>
+
+</body></html>

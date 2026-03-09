@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#1c74e9",
+              "background-light": "#f6f7f8",
+              "background-dark": "#111821",
+            },
+            fontFamily: {
+              "display": ["Lexend"]
+            },
+            borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            font-family: 'Lexend', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen">
+<!-- Main Container -->
+<div class="max-w-md mx-auto bg-white dark:bg-slate-900 min-h-screen flex flex-col shadow-2xl relative overflow-hidden">
+<!-- Header -->
+<header class="pt-6 px-6 pb-4 bg-white dark:bg-slate-900 sticky top-0 z-10 border-b border-slate-100 dark:border-slate-800">
+<div class="flex items-center justify-between mb-6">
+<button class="w-10 h-10 flex items-center justify-center rounded-full bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<div class="flex flex-col items-center">
+<span class="text-xs font-semibold text-primary uppercase tracking-wider">Session Active</span>
+<h1 class="text-xl font-bold">Varsity Soccer</h1>
+</div>
+<button class="w-10 h-10 flex items-center justify-center rounded-full bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+<span class="material-symbols-outlined">calendar_today</span>
+</button>
+</div>
+<!-- Date & Search -->
+<div class="space-y-4">
+<div class="flex items-center justify-between">
+<h2 class="text-lg font-bold">Tuesday, Oct 24</h2>
+<div class="flex items-center gap-1 text-primary text-sm font-medium">
+<span class="material-symbols-outlined text-sm">group</span>
+<span>24 Registered</span>
+</div>
+</div>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+<input class="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl py-3 pl-12 pr-4 focus:ring-2 focus:ring-primary/20 text-sm" placeholder="Search roster..." type="text"/>
+</div>
+</div>
+</header>
+<!-- Attendance List -->
+<main class="flex-1 overflow-y-auto p-6 space-y-6">
+<!-- Student Card 1: Present -->
+<div class="bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-100 dark:border-slate-700 shadow-sm">
+<div class="flex items-center gap-4 mb-4">
+<div class="relative">
+<img class="w-14 h-14 rounded-full object-cover" data-alt="Profile picture of a young male soccer player" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBU_dPjXdSnfaY5idh0X831z5PVeXQUpPMe-QwDMPLFeFU-_N9Gouzevmn-rE2pJYgc1ru55Zj4cD8lh4lWrBizGNDySa_UPXeoK1kJiwxcYN5XKvr3wjaYYej7pv5igETEIUZdINteGPh-7GnheJ08l6jH5mzP3qLccMQdPQueC_l5Dt3Qsgd16GIhLgqDtLt9kuCbrXKuJqHdX8RTRY8vDP6bmdkS7X6R6STi5it7a9t3nBeWBzWRXyqwkbwCbnUlj5KfgyQg3tI"/>
+<div class="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 border-2 border-white dark:border-slate-800 rounded-full"></div>
+</div>
+<div class="flex-1">
+<h3 class="font-bold text-base">Alex Johnson</h3>
+<p class="text-slate-500 text-xs">#10 · Varsity Forward</p>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-2">
+<button class="bg-primary text-white py-2 rounded-lg text-xs font-semibold flex items-center justify-center gap-1 shadow-md shadow-primary/20">
+<span class="material-symbols-outlined text-sm">check_circle</span>
+                        Present
+                    </button>
+<button class="bg-slate-50 dark:bg-slate-700 text-slate-500 py-2 rounded-lg text-xs font-semibold hover:bg-red-50 hover:text-red-500 transition-colors">
+                        Absent
+                    </button>
+<button class="bg-slate-50 dark:bg-slate-700 text-slate-500 py-2 rounded-lg text-xs font-semibold hover:bg-orange-50 hover:text-orange-500 transition-colors">
+                        Justified
+                    </button>
+</div>
+</div>
+<!-- Student Card 2: Absent State -->
+<div class="bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-100 dark:border-slate-700 shadow-sm ring-2 ring-red-500/10">
+<div class="flex items-center gap-4 mb-4">
+<div class="relative">
+<img class="w-14 h-14 rounded-full object-cover grayscale" data-alt="Profile picture of a teenage male student" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_r0W9zadRtyAthRcDAwHkLHxzhhnVmEGa_vuXatcWlq6ZgduYGNU6k4psl2lnnhNVTPcP9DLeKMSrs2Uicwgl9EAh-FI__gKD9tBTy2QHYg-jzdTssaR57vRvYjsplmzy6jOYy9K4U_VGs1HSOdqIfZL6AubNSER-SucBQ5Y1-wMmckeDYSnQbLbtgUAsHd8fWupY9Ce57oy52mjexQ0sv6bqxXYx6WjWjgepJJhsqwqstCQShb_hgQQwMcT3Ro1lLJzLFtVmEDE"/>
+<div class="absolute -bottom-1 -right-1 w-5 h-5 bg-red-500 border-2 border-white dark:border-slate-800 rounded-full"></div>
+</div>
+<div class="flex-1">
+<h3 class="font-bold text-base">Marcus Thompson</h3>
+<p class="text-slate-500 text-xs">#04 · Central Midfield</p>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-2 mb-4">
+<button class="bg-slate-50 dark:bg-slate-700 text-slate-500 py-2 rounded-lg text-xs font-semibold">
+                        Present
+                    </button>
+<button class="bg-red-500 text-white py-2 rounded-lg text-xs font-semibold flex items-center justify-center gap-1 shadow-md shadow-red-500/20">
+<span class="material-symbols-outlined text-sm">cancel</span>
+                        Absent
+                    </button>
+<button class="bg-slate-50 dark:bg-slate-700 text-slate-500 py-2 rounded-lg text-xs font-semibold">
+                        Justified
+                    </button>
+</div>
+<div class="relative">
+<textarea class="w-full bg-red-50/50 dark:bg-red-900/10 border-none rounded-xl py-3 px-4 text-xs italic focus:ring-1 focus:ring-red-200 resize-none h-16" placeholder="Add a note (e.g. Missed bus...)"></textarea>
+</div>
+</div>
+<!-- Student Card 3: Justified State -->
+<div class="bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-100 dark:border-slate-700 shadow-sm ring-2 ring-orange-500/10">
+<div class="flex items-center gap-4 mb-4">
+<div class="relative">
+<img class="w-14 h-14 rounded-full object-cover" data-alt="Profile picture of a young female soccer player" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCoT-Ohiiwty1bRSaDc_z0eiKtwNv29oFriT0RS2Ay8rDXoI83R5dfGED0lnxy536PTKmGXaU4BlxUI85sksXYqBLMNus8FZdLtoo48nZgBQhcV7KQXBMPTXPntZznmVYoJGbDMut9Mae-mz66I7zmfYt2k8FktCCfDSFdBp2bySftRC9lP2-BgU0t3XCZJ__9rhyRTaT7hX4YYn3ka72Nayv8WqE-EQ0JWAuvkbwjXC1o6Kj_1L2EvhdU25eIKtalgkH7yeWBTlqA"/>
+<div class="absolute -bottom-1 -right-1 w-5 h-5 bg-orange-500 border-2 border-white dark:border-slate-800 rounded-full"></div>
+</div>
+<div class="flex-1">
+<h3 class="font-bold text-base">Sarah Miller</h3>
+<p class="text-slate-500 text-xs">#22 · Goalkeeper</p>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-2 mb-4">
+<button class="bg-slate-50 dark:bg-slate-700 text-slate-500 py-2 rounded-lg text-xs font-semibold">
+                        Present
+                    </button>
+<button class="bg-slate-50 dark:bg-slate-700 text-slate-500 py-2 rounded-lg text-xs font-semibold">
+                        Absent
+                    </button>
+<button class="bg-orange-500 text-white py-2 rounded-lg text-xs font-semibold flex items-center justify-center gap-1 shadow-md shadow-orange-500/20">
+<span class="material-symbols-outlined text-sm">info</span>
+                        Justified
+                    </button>
+</div>
+<div class="relative">
+<input class="w-full bg-orange-50/50 dark:bg-orange-900/10 border-none rounded-xl py-3 px-4 text-xs focus:ring-1 focus:ring-orange-200" placeholder="Add a reason..." type="text" value="Doctor's appointment"/>
+</div>
+</div>
+<!-- Student Card 4: Default -->
+<div class="bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-100 dark:border-slate-700 shadow-sm">
+<div class="flex items-center gap-4 mb-4">
+<div class="relative">
+<img class="w-14 h-14 rounded-full object-cover" data-alt="Profile picture of a young male student" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB2lEvyg8o-AfBk3iqovxuD6kfJlrTPhnF-udyxFefXEJg3k6lpVgx7752FfDtsKLU1psnUFDnOh1OYU8FCEpr_lacF7d6y5QIwd-1Uc84YdDxUPZJEQG_WSw8GmjvG7OPfhmfKEcvudHt9kNAewkGsKghM8feYkfcuuPL7UVAngsn-ECPf9x4pYMCHHkPMamIZGtrXQf5o8PVYHEr8-fh7bXdam0umiGp54uMxeZ7Phn65hLBD8ZP0_dM4QUjUkRkCPEzlDesB2BQ"/>
+<div class="absolute -bottom-1 -right-1 w-5 h-5 bg-slate-200 border-2 border-white dark:border-slate-800 rounded-full"></div>
+</div>
+<div class="flex-1">
+<h3 class="font-bold text-base">David Chen</h3>
+<p class="text-slate-500 text-xs">#08 · Defense</p>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-2">
+<button class="bg-slate-50 dark:bg-slate-700 text-slate-500 py-2 rounded-lg text-xs font-semibold hover:bg-green-50 hover:text-green-600 transition-colors">
+                        Present
+                    </button>
+<button class="bg-slate-50 dark:bg-slate-700 text-slate-500 py-2 rounded-lg text-xs font-semibold hover:bg-red-50 hover:text-red-500 transition-colors">
+                        Absent
+                    </button>
+<button class="bg-slate-50 dark:bg-slate-700 text-slate-500 py-2 rounded-lg text-xs font-semibold hover:bg-orange-50 hover:text-orange-500 transition-colors">
+                        Justified
+                    </button>
+</div>
+</div>
+<div class="pb-24"></div> <!-- Spacer for Fab and Bottom Nav -->
+</main>
+<!-- Floating Submit Button -->
+<div class="fixed bottom-24 left-1/2 -translate-x-1/2 w-full max-w-xs px-6">
+<button class="w-full bg-primary text-white py-4 rounded-full font-bold shadow-xl shadow-primary/30 flex items-center justify-center gap-2 transform active:scale-95 transition-transform">
+<span class="material-symbols-outlined">cloud_upload</span>
+                Submit Attendance
+            </button>
+</div>
+<!-- Bottom Navigation -->
+<nav class="fixed bottom-0 w-full max-w-md bg-white/80 dark:bg-slate-900/80 backdrop-blur-lg border-t border-slate-100 dark:border-slate-800 flex items-center justify-around py-3 px-4 z-20">
+<a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined">calendar_month</span>
+<span class="text-[10px] font-medium">Classes</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="text-[10px] font-medium">Students</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined fill-[1]">assignment_turned_in</span>
+<span class="text-[10px] font-bold">Attendance</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="text-[10px] font-medium">Reports</span>
+</a>
+</nav>
+</div>
+</body></html>

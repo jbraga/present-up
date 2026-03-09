@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Studio Management Dashboard - Selection Mode</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1c74e9",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#111821",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        body {
+            font-family: 'Lexend', sans-serif;
+            min-height: max(884px, 100dvh);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .active-icon {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .filled-icon {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
+<div class="relative flex min-h-screen w-full flex-col max-w-md mx-auto bg-white dark:bg-slate-900 shadow-2xl overflow-hidden">
+<header class="flex items-center justify-between px-6 pt-8 pb-4 animate-in fade-in slide-in-from-top-4 duration-300">
+<div class="flex items-center gap-4">
+<button class="text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">close</span>
+</button>
+<div class="flex flex-col">
+<p class="text-xs font-light text-primary uppercase tracking-widest">Selection Active</p>
+<h1 class="text-2xl font-light text-slate-900 dark:text-slate-100">2 Classes Selected</h1>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="flex h-10 w-10 items-center justify-center rounded-full bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">share</span>
+</button>
+<button class="flex h-10 w-10 items-center justify-center rounded-full bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-blue-500 transition-colors">
+<span class="material-symbols-outlined">edit</span>
+</button>
+<button class="flex h-10 w-10 items-center justify-center rounded-full bg-red-50 dark:bg-red-900/20 text-red-500 hover:bg-red-100 transition-colors">
+<span class="material-symbols-outlined">delete</span>
+</button>
+</div>
+</header>
+<main class="flex-1 px-6 pb-24 overflow-y-auto">
+<div class="grid grid-cols-2 gap-4 mt-4 opacity-40 grayscale-[0.5]">
+<div class="bg-primary/5 dark:bg-primary/10 p-4 rounded-2xl border border-primary/10">
+<p class="text-xs font-normal text-primary/70 uppercase">Total Students</p>
+<p class="text-2xl font-light mt-1">124</p>
+</div>
+<div class="bg-slate-50 dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700">
+<p class="text-xs font-normal text-slate-500 uppercase">Avg Attendance</p>
+<p class="text-2xl font-light mt-1 text-slate-800 dark:text-slate-200">92%</p>
+</div>
+</div>
+<div class="flex items-center justify-between mt-10 mb-6">
+<h2 class="text-xl font-light tracking-tight">Upcoming Classes</h2>
+<button class="text-sm font-medium text-primary">Select All</button>
+</div>
+<div class="space-y-4">
+<div class="relative group flex items-center gap-4 p-4 rounded-2xl bg-white dark:bg-slate-800 border-2 border-primary ring-4 ring-primary/5 transition-all shadow-md">
+<div class="absolute -top-2 -right-2 bg-primary text-white h-6 w-6 rounded-full flex items-center justify-center shadow-lg z-10">
+<span class="material-symbols-outlined text-sm filled-icon">check</span>
+</div>
+<div class="h-16 w-16 overflow-hidden rounded-xl bg-slate-100 relative">
+<img alt="Advanced Ballet" class="h-full w-full object-cover" data-alt="Dancer performing elegant ballet pose in studio" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDfg9irTaxJMMoPvf-55fQjJ2OM6Yj6yNhlSDhXC2eRUXxopIr_eB1s8FIHOcPwzvFB2AKeMT5dsCVC-KvvgHCnRfPlcnqlp5K3rmILdwfG4Cr0xn3R2-JcNFxAL344oRwRPgZLEGp56WU8XwELRPDG5L65uRHu_98kcy_t7qQS_Icb5J2Or_XynHxpSyotthy7wTRRs-xsPWVAWJmRwxROTcLXJMb2KDu_I6DGZlsKtg2g8XH3i6BVhY4YFFQTZClIhZSn1CkdpjM"/>
+<div class="absolute inset-0 bg-primary/10"></div>
+</div>
+<div class="flex flex-1 flex-col">
+<h3 class="text-base font-normal text-slate-900 dark:text-slate-100 leading-tight">Advanced Ballet</h3>
+<p class="text-xs font-light text-slate-500 dark:text-slate-400 mt-1">Studio A • 12 Students</p>
+<div class="flex items-center gap-1 mt-2">
+<span class="material-symbols-outlined text-[14px] text-primary">schedule</span>
+<p class="text-[11px] font-medium text-primary uppercase tracking-wider">10:00 AM - 11:30 AM</p>
+</div>
+</div>
+</div>
+<div class="relative group flex items-center gap-4 p-4 rounded-2xl bg-white dark:bg-slate-800 border-2 border-primary ring-4 ring-primary/5 transition-all shadow-md">
+<div class="absolute -top-2 -right-2 bg-primary text-white h-6 w-6 rounded-full flex items-center justify-center shadow-lg z-10">
+<span class="material-symbols-outlined text-sm filled-icon">check</span>
+</div>
+<div class="h-16 w-16 overflow-hidden rounded-xl bg-slate-100 relative">
+<img alt="Contemporary Dance" class="h-full w-full object-cover" data-alt="Contemporary dancer in a dynamic expressive movement" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAwyOayVHZtPTHQ9gB1TZRDz6obQWpGolwKxPHgddPC-a4ByKUEpWmv1g3jC_XVSDwz5nfZKh7yJLyJkEz4MBHTzP3aodKZTUTx9-JQjJijq8VGr4VZN8bFJ4UnK43cLNuxqkcQ1T1ZxkTn3xUwN3I4twfBXDzFByKcVFfkwmR6zNfRO-x7iPjVwyCxSZIxflOVSaRcdXTTbxH_KvxZ-n6df26TR_y-PVs9hVg_cBBwUKrYcgcflPjOqtAPW1ZZYOczqoEXBRtzoE8"/>
+<div class="absolute inset-0 bg-primary/10"></div>
+</div>
+<div class="flex flex-1 flex-col">
+<h3 class="text-base font-normal text-slate-900 dark:text-slate-100 leading-tight">Contemporary Dance</h3>
+<p class="text-xs font-light text-slate-500 dark:text-slate-400 mt-1">Studio B • 8 Students</p>
+<div class="flex items-center gap-1 mt-2">
+<span class="material-symbols-outlined text-[14px] text-primary">schedule</span>
+<p class="text-[11px] font-medium text-primary uppercase tracking-wider">01:00 PM - 02:30 PM</p>
+</div>
+</div>
+</div>
+<div class="group flex items-center gap-4 p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 hover:border-primary/20 transition-all shadow-sm opacity-60">
+<div class="h-16 w-16 overflow-hidden rounded-xl bg-slate-100">
+<img alt="Hip Hop Beginner" class="h-full w-full object-cover" data-alt="Hip hop dancer mid-performance on stage" src="https://lh3.googleusercontent.com/aida-public/AB6AXuArW5LkYlHWwG8usLjTOxotg9RYwRdn1kJRV5Hfw5C3IJVO9pLEzdvPMZQXRFnWEu0sEGyqT5_Fag44nHUiyXZmiJ5ATt1wepkC0jW3xMh_vqQ9PNCgQsSOfETC5Msrwey5hogn1n6fCP7Ag15nvd2-hHCLUhiHYCwOoi5i2oN3FYYpKQFvDXKSly9rOtmfWpNQL6bpSDaauy-zoIbCbVFFJUjqh_Kfl0b4e2sbqeaztYVNvjee4mXsJ8kRPj8rvSHuYD8aLL8KDI0"/>
+</div>
+<div class="flex flex-1 flex-col">
+<h3 class="text-base font-normal text-slate-900 dark:text-slate-100 leading-tight">Hip Hop Beginner</h3>
+<p class="text-xs font-light text-slate-500 dark:text-slate-400 mt-1">Studio C • 15 Students</p>
+<div class="flex items-center gap-1 mt-2">
+<span class="material-symbols-outlined text-[14px] text-primary opacity-50">schedule</span>
+<p class="text-[11px] font-medium text-primary uppercase tracking-wider opacity-50">04:00 PM - 05:00 PM</p>
+</div>
+</div>
+<div class="h-6 w-6 rounded-full border border-slate-200 dark:border-slate-600"></div>
+</div>
+</div>
+</main>
+<nav class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-t border-slate-100 dark:border-slate-800 px-8 pb-8 pt-4">
+<div class="flex justify-between items-center">
+<a class="flex flex-col items-center gap-1 group" href="#">
+<div class="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+<span class="material-symbols-outlined active-icon">calendar_month</span>
+</div>
+<span class="text-[10px] font-medium tracking-wide text-primary uppercase">Classes</span>
+</a>
+<a class="flex flex-col items-center gap-1 group text-slate-400 dark:text-slate-500" href="#">
+<div class="flex h-10 w-10 items-center justify-center rounded-xl group-hover:bg-slate-50 dark:group-hover:bg-slate-800 transition-colors">
+<span class="material-symbols-outlined">group</span>
+</div>
+<span class="text-[10px] font-medium tracking-wide uppercase">Students</span>
+</a>
+<a class="flex flex-col items-center gap-1 group text-slate-400 dark:text-slate-500" href="#">
+<div class="flex h-10 w-10 items-center justify-center rounded-xl group-hover:bg-slate-50 dark:group-hover:bg-slate-800 transition-colors">
+<span class="material-symbols-outlined">check_circle</span>
+</div>
+<span class="text-[10px] font-medium tracking-wide uppercase">Attendance</span>
+</a>
+</div>
+</nav>
+</div>
+
+</body></html>
