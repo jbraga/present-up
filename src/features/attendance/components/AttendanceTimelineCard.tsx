@@ -4,6 +4,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { DailyTimelineEntry, SessionStatus } from '@features/attendance/hooks/useDailyTimeline';
 import { StudentEntity } from '@features/students/types/student';
+import i18n from '@shared/localization/i18n';
 import { palette, shape, spacing, typography } from '@theme/tokens';
 
 type AttendanceTimelineCardProps = {
@@ -13,10 +14,10 @@ type AttendanceTimelineCardProps = {
 };
 
 const STATUS_CONFIG: Record<SessionStatus, { label: string; color: string; bgColor: string }> = {
-  completed: { label: 'Completed', color: palette.success, bgColor: palette.successContainer },
-  in_progress: { label: 'In Progress', color: palette.warning, bgColor: palette.warningContainer },
-  upcoming: { label: 'UPCOMING', color: palette.onSurfaceMuted, bgColor: palette.surfaceDim },
-  not_recorded: { label: 'Not Recorded', color: palette.error, bgColor: palette.errorContainer },
+  completed: { label: i18n.t('attendance.completed'), color: palette.success, bgColor: palette.successContainer },
+  in_progress: { label: i18n.t('attendance.in_progress'), color: palette.warning, bgColor: palette.warningContainer },
+  upcoming: { label: i18n.t('attendance.upcoming'), color: palette.onSurfaceMuted, bgColor: palette.surfaceDim },
+  not_recorded: { label: i18n.t('attendance.not_recorded'), color: palette.error, bgColor: palette.errorContainer },
 };
 
 const MAX_VISIBLE_AVATARS = 5;
@@ -77,7 +78,7 @@ export const AttendanceTimelineCard = memo(
               </>
             ) : (
               <Text style={styles.noRecordsText}>
-                {entry.totalEnrolled} enrolled
+                {entry.totalEnrolled} {i18n.t('common.enrolled')}
               </Text>
             )}
             {entry.instructorName ? (

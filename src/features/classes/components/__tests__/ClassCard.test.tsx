@@ -13,7 +13,6 @@ const mockClass: ClassEntity = {
   capacity: 18,
   location: 'Main Field',
   iconName: 'soccer',
-  imageUri: '',
   createdAt: new Date('2025-01-01'),
   updatedAt: new Date('2025-02-01'),
 };

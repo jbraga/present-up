@@ -22,9 +22,8 @@ export class ClassService {
     minAttendancePercentage: number,
     location?: string,
     iconName?: string,
-    imageUri?: string
   ) {
-    return this.dataService.updateClass(classId, name, instructorName, schedule, capacity, minAttendancePercentage, location, iconName, imageUri);
+    return this.dataService.updateClass(classId, name, instructorName, schedule, capacity, minAttendancePercentage, location, iconName);
   }
 
   assignStudentToClass(classId: string, studentId: string) {

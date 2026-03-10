@@ -1,24 +1,26 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Stack, useRouter } from 'expo-router';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
-    Alert,
-    KeyboardAvoidingView,
-    Platform,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    View,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
 } from 'react-native';
 
 import { useUpsertStudent } from '@features/students/hooks/useUpsertStudent';
+import { ConfirmationDialog } from '@shared/components/ConfirmationDialog';
 import { FormIconHeader } from '@shared/components/FormIconHeader';
 import { FormInput } from '@shared/components/FormInput';
 import { palette, spacing, typography } from '@theme/tokens';
 
 const CreateStudentScreen = () => {
   const router = useRouter();
+  const { t } = useTranslation();
   const upsertStudentMutation = useUpsertStudent();
 
   const [firstName, setFirstName] = useState('');
@@ -28,6 +30,7 @@ const CreateStudentScreen = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isCancelDialogOpen, setCancelDialogOpen] = useState(false);
 
   const isSubmitDisabled = !firstName.trim() || !lastName.trim() || isSubmitting;
 
@@ -64,13 +67,15 @@ const CreateStudentScreen = () => {
     }
 
     if (firstName.trim() || lastName.trim() || email.trim()) {
-      Alert.alert('Discard changes?', 'Your form data will be lost.', [
-        { text: 'Keep editing', style: 'cancel' },
-        { text: 'Discard', style: 'destructive', onPress: () => router.back() },
-      ]);
+      setCancelDialogOpen(true);
     } else {
       router.back();
     }
+  };
+
+  const handleConfirmCancel = () => {
+    setCancelDialogOpen(false);
+    router.back();
   };
 
   const behavior = Platform.OS === 'ios' ? 'padding' : undefined;
@@ -79,13 +84,22 @@ const CreateStudentScreen = () => {
     <>
       <Stack.Screen
         options={{
-          title: 'Add Student',
+          title: t('students.add_new'),
           headerLeft: () => (
             <Pressable onPress={handleCancel} hitSlop={8} accessibilityRole="button">
               <MaterialCommunityIcons name="arrow-left" size={24} color={palette.onSurface} />
             </Pressable>
           ),
         }}
+      />
+      <ConfirmationDialog
+        visible={isCancelDialogOpen}
+        title={t('common.discard')}
+        message={t('students.discard_changes_confirm')}
+        confirmLabel={t('common.discard')}
+        cancelLabel={t('common.cancel')}
+        onConfirm={handleConfirmCancel}
+        onCancel={() => setCancelDialogOpen(false)}
       />
       <KeyboardAvoidingView behavior={behavior} style={styles.screen}>
         <ScrollView
@@ -96,11 +110,11 @@ const CreateStudentScreen = () => {
 
           <FormIconHeader
             icon="account-plus-outline"
-            description="Enter the student's details to add them to the system."
+            description={t('students.add_new')}
           />
 
           <FormInput
-            label="First Name"
+            label={t('students.first_name')}
             icon="account-outline"
             value={firstName}
             onChangeText={setFirstName}
@@ -111,7 +125,7 @@ const CreateStudentScreen = () => {
           />
 
           <FormInput
-            label="Last Name"
+            label={t('students.last_name')}
             icon="account-outline"
             value={lastName}
             onChangeText={setLastName}
@@ -122,7 +136,7 @@ const CreateStudentScreen = () => {
           />
 
           <FormInput
-            label="Student Email (optional)"
+            label={t('students.email')}
             icon="email-outline"
             value={email}
             onChangeText={setEmail}
@@ -133,18 +147,19 @@ const CreateStudentScreen = () => {
           />
 
           <FormInput
-            label="Guardian Email (optional)"
-            icon="email-outline"
+            label={t('students.guardian_email')}
+            icon="account-child-outline"
             value={guardianEmail}
             onChangeText={setGuardianEmail}
-            placeholder="e.g. parent@email.com"
+            placeholder="e.g. parent@example.com"
             keyboardType="email-address"
             autoCapitalize="none"
+            autoCorrect={false}
             returnKeyType="next"
           />
 
           <FormInput
-            label="Phone (optional)"
+            label={t('students.phone')}
             icon="phone-outline"
             value={phoneNumber}
             onChangeText={setPhoneNumber}
@@ -162,7 +177,7 @@ const CreateStudentScreen = () => {
             onPress={handleSubmit}
             disabled={isSubmitDisabled}
             accessibilityRole="button">
-            <Text style={styles.primaryButtonText}>{isSubmitting ? 'Saving…' : 'Add Student'}</Text>
+            <Text style={styles.primaryButtonText}>{isSubmitting ? t('common.loading') : t('students.add_new')}</Text>
             {!isSubmitting ? (
               <MaterialCommunityIcons name="plus-circle" size={20} color={palette.onPrimary} />
             ) : null}

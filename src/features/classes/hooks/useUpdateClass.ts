@@ -18,7 +18,6 @@ export const useUpdateClass = () => {
       minAttendancePercentage: number;
       location?: string;
       iconName?: string;
-      imageUri?: string;
     }) => {
       logger.debug('[useUpdateClass] Updating class', { classId: input.classId, name: input.name });
       
@@ -31,7 +30,6 @@ export const useUpdateClass = () => {
         input.minAttendancePercentage,
         input.location,
         input.iconName,
-        input.imageUri
       );
       
       logger.info('[useUpdateClass] Class updated successfully', { classId: input.classId });

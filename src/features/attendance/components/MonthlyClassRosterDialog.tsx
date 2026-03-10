@@ -1,5 +1,6 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Dimensions, FlatList, StyleSheet, Text, View } from 'react-native';
 
 import { ClassStudentAttendanceRow } from '@features/classes/components/ClassStudentAttendanceRow';
@@ -13,6 +14,7 @@ type MonthlyClassRosterDialogProps = {
   visible: boolean;
   summary: MonthlyClassSummary | null;
   searchQuery: string;
+  selectedMonth: Date;
   onSearchChange: (query: string) => void;
   onClose: () => void;
 };
@@ -21,9 +23,11 @@ export const MonthlyClassRosterDialog = ({
   visible,
   summary,
   searchQuery,
+  selectedMonth,
   onSearchChange,
   onClose,
 }: MonthlyClassRosterDialogProps) => {
+  const { t } = useTranslation();
   const studentsQuery = useStudentsByIds(summary?.studentIds ?? []);
   const students = studentsQuery.data;
 
@@ -38,55 +42,57 @@ export const MonthlyClassRosterDialog = ({
 
   if (!summary) return null;
 
+  const monthName = selectedMonth.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+
   return (
     <BottomSheet visible={visible} onClose={onClose}>
       <View style={styles.headerRow}>
-            <View style={styles.headerTitles}>
-              <Text style={styles.sessionLabel}>MONTHLY ROSTER</Text>
-              <Text style={styles.className} numberOfLines={1}>{summary.className}</Text>
-            </View>
-          </View>
+        <View style={styles.headerTitles}>
+          <Text style={styles.sessionLabel}>{t('attendance.roster_dialog.subtitle', { month: monthName }).toUpperCase()}</Text>
+          <Text style={styles.className} numberOfLines={1}>{summary.className}</Text>
+        </View>
+      </View>
 
-          <View style={styles.dateRow}>
-            <Text style={styles.dateLabel}>{summary.totalSessionsRecorded} Sessions</Text>
-            <View style={styles.registeredBadge}>
-              <MaterialCommunityIcons name="account-group" size={14} color={palette.primary} />
-              <Text style={styles.registeredText}>{(students ?? []).length} Registered</Text>
-            </View>
-          </View>
+      <View style={styles.dateRow}>
+        <Text style={styles.dateLabel}>{t('report.total_sessions', { count: summary.totalSessionsRecorded })}</Text>
+        <View style={styles.registeredBadge}>
+          <MaterialCommunityIcons name="account-group" size={14} color={palette.primary} />
+          <Text style={styles.registeredText}>{(students ?? []).length} {t('report.enrolled')}</Text>
+        </View>
+      </View>
 
-          <SearchInput
-            value={searchQuery}
-            onChangeText={onSearchChange}
-            placeholder="Search roster..."
+      <SearchInput
+        value={searchQuery}
+        onChangeText={onSearchChange}
+        placeholder={t('common.search')}
+      />
+
+      <FlatList
+        data={filteredStudents}
+        keyExtractor={(item) => item.id}
+        style={styles.studentList}
+        contentContainerStyle={styles.studentListContent}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+        nestedScrollEnabled
+        bounces
+        renderItem={({ item }) => (
+          <ClassStudentAttendanceRow
+            student={item}
+            summary={summary.studentSummaries[item.id] ?? null}
+            minAttendancePercentage={summary.minAttendancePercentage}
           />
-
-          <FlatList
-            data={filteredStudents}
-            keyExtractor={(item) => item.id}
-            style={styles.studentList}
-            contentContainerStyle={styles.studentListContent}
-            showsVerticalScrollIndicator={false}
-            keyboardShouldPersistTaps="handled"
-            nestedScrollEnabled
-            bounces
-            renderItem={({ item }) => (
-              <ClassStudentAttendanceRow
-                student={item}
-                summary={summary.studentSummaries[item.id] ?? null}
-                minAttendancePercentage={summary.minAttendancePercentage}
-              />
-            )}
-            ListEmptyComponent={() => (
-              <View style={styles.centerState}>
-                <MaterialCommunityIcons name="account-search-outline" size={48} color={palette.onSurfaceMuted} />
-                <Text style={styles.centerStateTitle}>No students found</Text>
-                <Text style={styles.centerStateText}>
-                  {searchQuery.trim() ? 'Try a different search term.' : 'This class has no students enrolled.'}
-                </Text>
-              </View>
-            )}
-          />
+        )}
+        ListEmptyComponent={() => (
+          <View style={styles.centerState}>
+            <MaterialCommunityIcons name="account-search-outline" size={48} color={palette.onSurfaceMuted} />
+            <Text style={styles.centerStateTitle}>{t('students.empty')}</Text>
+            <Text style={styles.centerStateText}>
+              {searchQuery.trim() ? t('students.empty_search') : t('classes.details.empty_subtitle')}
+            </Text>
+          </View>
+        )}
+      />
     </BottomSheet>
   );
 };

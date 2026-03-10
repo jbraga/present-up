@@ -1,5 +1,4 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { Image as ExpoImage } from 'expo-image';
 import { memo } from 'react';
 import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
@@ -37,10 +36,6 @@ export const ClassCard = memo(({ item, onPress, onLongPress, isSelected = false,
       {isSelected ? (
         <View style={styles.thumbnailSelected}>
           <MaterialCommunityIcons name="check" size={28} color={palette.onPrimary} />
-        </View>
-      ) : item.imageUri ? (
-        <View style={styles.thumbnail}>
-          <ExpoImage source={{ uri: item.imageUri }} style={styles.thumbnailImage} contentFit="cover" />
         </View>
       ) : (
         <View style={styles.thumbnail}>
@@ -115,11 +110,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
-  },
-  thumbnailImage: {
-    width: 64,
-    height: 64,
-    borderRadius: 12,
   },
   thumbnailSelected: {
     width: 64,

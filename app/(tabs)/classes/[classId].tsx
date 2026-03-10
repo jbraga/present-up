@@ -1,6 +1,7 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { Stack, useLocalSearchParams } from 'expo-router';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Alert, Platform, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -11,19 +12,54 @@ import { useAssignStudentToClass } from '@features/classes/hooks/useAssignStuden
 import { useClassList } from '@features/classes/hooks/useClassList';
 import { useClassRoster } from '@features/classes/hooks/useClassRoster';
 import { useUnassignStudentFromClass } from '@features/classes/hooks/useUnassignStudentFromClass';
+import { CLASS_SCHEDULE_DAYS } from '@features/classes/types/class';
 import { useStudentsByIds } from '@features/students/hooks/useStudentsByIds';
-import { FormIconHeader } from '@shared/components/FormIconHeader';
+import { ConfirmationDialog } from '@shared/components/ConfirmationDialog';
 import { SearchInput } from '@shared/components/SearchInput';
 import { SelectionToolbar } from '@shared/components/SelectionToolbar';
 
-import { palette, spacing, typography } from '@theme/tokens';
+import { palette, shape, spacing, typography } from '@theme/tokens';
+
+type IconName = keyof typeof MaterialCommunityIcons.glyphMap;
+
+const ClassInfoRow = ({
+  icon,
+  value,
+  fullWidth = false,
+  numberOfLines = 1,
+}: {
+  icon: IconName;
+  value: string;
+  fullWidth?: boolean;
+  numberOfLines?: number;
+}) => (
+  <View style={[styles.infoItem, fullWidth && styles.infoItemFullWidth]}>
+    <View style={styles.infoIconContainer}>
+      <MaterialCommunityIcons name={icon} size={20} color={palette.primary} />
+    </View>
+    <Text style={styles.infoValue} numberOfLines={numberOfLines} ellipsizeMode="tail">
+      {value}
+    </Text>
+  </View>
+);
+
+const DAY_SHORT_KEY_BY_DAY: Record<(typeof CLASS_SCHEDULE_DAYS)[number], string> = {
+  Monday: 'mon',
+  Tuesday: 'tue',
+  Wednesday: 'wed',
+  Thursday: 'thu',
+  Friday: 'fri',
+};
 
 const ClassDetailScreen = () => {
   const params = useLocalSearchParams<{ classId?: string | string[] }>();
+  const { t } = useTranslation();
+  const router = useRouter();
   const classIdParam = params.classId;
   const classId = Array.isArray(classIdParam) ? classIdParam[0] : classIdParam ?? null;
 
   const [isAddStudentDialogOpen, setAddStudentDialogOpen] = useState(false);
+  const [isRemoveDialogOpen, setRemoveDialogOpen] = useState(false);
   const [selectedStudentIds, setSelectedStudentIds] = useState<Set<string>>(new Set());
   const [searchQuery, setSearchQuery] = useState('');
   const [showAtRiskOnly, setShowAtRiskOnly] = useState(false);
@@ -118,37 +154,31 @@ const ClassDetailScreen = () => {
     setSelectedStudentIds(new Set());
   };
 
-  const handleDeleteSelected = async () => {
+  const handleDeleteSelected = () => {
     if (!classId) return;
-    const count = selectedStudentIds.size;
-    const studentNames = students
-      .filter(({ studentId }) => selectedStudentIds.has(studentId))
-      .map(({ student }) => student ? `${student.firstName} ${student.lastName}` : 'Unknown student')
-      .join(', ');
-    
-    Alert.alert(
-      'Remove students from class',
-      `Are you sure you want to remove ${count} student${count > 1 ? 's' : ''} from this class?\n\n${studentNames}`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Remove',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              // Unassign all selected students
-              for (const studentId of selectedStudentIds) {
-                await unassignStudentMutation.mutateAsync({ classId, studentId });
-              }
-              setSelectedStudentIds(new Set());
-            } catch {
-              Alert.alert('Error', 'Unable to remove students. Please try again.');
-            }
-          },
-        },
-      ]
-    );
+    setRemoveDialogOpen(true);
   };
+
+  const handleConfirmDeleteSelected = async () => {
+    if (!classId) return;
+
+    try {
+      for (const studentId of selectedStudentIds) {
+        await unassignStudentMutation.mutateAsync({ classId, studentId });
+      }
+      setSelectedStudentIds(new Set());
+      setRemoveDialogOpen(false);
+    } catch {
+      Alert.alert(t('common.error'), t('common.error'));
+    }
+  };
+
+  const selectedStudentNames = useMemo(() => {
+    return students
+      .filter(({ studentId }) => selectedStudentIds.has(studentId))
+      .map(({ student }) => (student ? `${student.firstName} ${student.lastName}` : t('students.unknown')))
+      .join(', ');
+  }, [students, selectedStudentIds, t]);
 
   const capacityLabel = currentClass?.capacity
     ? `${rosterStudentIds.length} / ${currentClass.capacity}`
@@ -161,6 +191,29 @@ const ClassDetailScreen = () => {
       return summary.attendanceRate < currentClass.minAttendancePercentage;
     }).length;
   }, [students, currentClass]);
+
+  const scheduleSummary = useMemo(() => {
+    const schedule = currentClass?.schedule ?? [];
+    if (!schedule.length) {
+      return '—';
+    }
+
+    const dayOrder = new Map(CLASS_SCHEDULE_DAYS.map((day, index) => [day, index]));
+
+    const formatted = [...schedule]
+      .sort((a, b) => (dayOrder.get(a.dayOfWeek) ?? 0) - (dayOrder.get(b.dayOfWeek) ?? 0))
+      .map((entry) => {
+        const dayKey = DAY_SHORT_KEY_BY_DAY[entry.dayOfWeek];
+        const dayLabel = t(`common.days_short.${dayKey}`);
+        return `${dayLabel} ${entry.startTime}-${entry.endTime}`;
+      });
+
+    if (formatted.length <= 2) {
+      return formatted.join(' · ');
+    }
+
+    return `${formatted.slice(0, 2).join(' · ')} · +${formatted.length - 2}`;
+  }, [currentClass?.schedule, t]);
 
   const filteredStudents = useMemo(() => {
     let result = students;
@@ -183,15 +236,39 @@ const ClassDetailScreen = () => {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={[]}>
-      <Stack.Screen options={{ title: currentClass?.name }} />
+      <Stack.Screen
+        options={{
+          title: currentClass?.name,
+          headerRight: () =>
+            currentClass ? (
+              <Pressable
+                onPress={() => router.push({ pathname: '/(tabs)/classes/edit', params: { classId: currentClass.id } })}
+                style={styles.headerButton}
+                accessibilityRole="button"
+                accessibilityLabel={t('classes.edit_class')}>
+                <MaterialCommunityIcons name="pencil-outline" size={24} color={palette.onSurface} />
+              </Pressable>
+            ) : null,
+        }}
+      />
       {selectedStudentIds.size > 0 ? (
         <SelectionToolbar
           count={selectedStudentIds.size}
-          itemLabel="student"
+          itemType="student"
           onClose={handleClearSelection}
           onDelete={handleDeleteSelected}
         />
       ) : null}
+      <ConfirmationDialog
+        visible={isRemoveDialogOpen}
+        title={t('classes.details.remove_title')}
+        message={t('classes.details.remove_confirm', { count: selectedStudentIds.size, studentNames: selectedStudentNames })}
+        confirmLabel={t('classes.details.remove')}
+        cancelLabel={t('common.cancel')}
+        onConfirm={handleConfirmDeleteSelected}
+        onCancel={() => setRemoveDialogOpen(false)}
+        isConfirming={unassignStudentMutation.isPending}
+      />
       {isLoading && !isRefetching ? (
         <View style={styles.centered}>
           <ActivityIndicator color={palette.primary} size="large" />
@@ -200,8 +277,8 @@ const ClassDetailScreen = () => {
       {!isLoading && !currentClass ? (
         <View style={styles.centered}>
           <MaterialCommunityIcons name="school" size={48} color={palette.onSurfaceMuted} />
-          <Text style={styles.missingClassTitle}>Class not found</Text>
-          <Text style={styles.missingClassSubtitle}>Go back to the class list to select a different one.</Text>
+          <Text style={styles.missingClassTitle}>{t('classes.details.not_found')}</Text>
+          <Text style={styles.missingClassSubtitle}>{t('classes.details.not_found_subtitle')}</Text>
         </View>
       ) : null}
       {currentClass ? (
@@ -216,12 +293,17 @@ const ClassDetailScreen = () => {
             />
           }
           keyboardShouldPersistTaps="handled">
-          <FormIconHeader
-            icon="clipboard-text-outline"
-            description={"Track attendance and manage\nyour enrolled students"}
-          />
-          <View style={styles.filterRow}>
-            {atRiskCount > 0 ? (
+          <View style={styles.infoCard}>
+            <View style={styles.infoGrid}>
+              <ClassInfoRow icon="account-tie-outline" value={currentClass.instructorName || '—'} />
+              <ClassInfoRow icon="map-marker-outline" value={currentClass.location || '—'} />
+              <ClassInfoRow icon="account-group-outline" value={capacityLabel} />
+              <ClassInfoRow icon="percent-outline" value={`${Math.round(currentClass.minAttendancePercentage * 100)}%`} />
+              <ClassInfoRow icon="clock-outline" value={scheduleSummary} fullWidth numberOfLines={2} />
+            </View>
+          </View>
+          {atRiskCount > 0 ? (
+            <View style={styles.filterRow}>
               <Pressable
                 style={styles.filterLink}
                 onPress={() => setShowAtRiskOnly((prev) => !prev)}
@@ -232,25 +314,21 @@ const ClassDetailScreen = () => {
                   color={showAtRiskOnly ? palette.primary : palette.error}
                 />
                 <Text style={[styles.filterText, showAtRiskOnly && styles.filterTextActive]}>
-                  {showAtRiskOnly ? 'Show all' : `${atRiskCount} below threshold`}
+                  {showAtRiskOnly ? t('classes.details.show_all') : `${atRiskCount} ${t('classes.details.below_threshold')}`}
                 </Text>
               </Pressable>
-            ) : <View />}
-            <View style={styles.enrolledPill}>
-              <MaterialCommunityIcons name="account-group-outline" size={16} color={palette.primary} />
-              <Text style={styles.enrolledPillText}>{capacityLabel}</Text>
             </View>
-          </View>
+          ) : null}
           <SearchInput
             value={searchQuery}
             onChangeText={setSearchQuery}
-            placeholder="Search students..."
+            placeholder={t('common.search')}
           />
           {students.length === 0 ? (
             <View style={styles.emptyState}>
               <MaterialCommunityIcons name="account-multiple" size={48} color={palette.onSurfaceMuted} />
-              <Text style={styles.emptyTitle}>No students assigned</Text>
-              <Text style={styles.emptySubtitle}>Add students to this class to start viewing their attendance metrics.</Text>
+              <Text style={styles.emptyTitle}>{t('classes.details.empty_title')}</Text>
+              <Text style={styles.emptySubtitle}>{t('classes.details.empty_subtitle')}</Text>
             </View>
           ) : (
             <View style={styles.listContainer}>
@@ -276,7 +354,7 @@ const ClassDetailScreen = () => {
             style={styles.fab}
             onPress={() => setAddStudentDialogOpen(true)}
             accessibilityRole="button"
-            accessibilityLabel="Add student to class"
+            accessibilityLabel={t('classes.details.add_student')}
             {...(Platform.OS === 'ios' ? { hitSlop: FAB_HIT_SLOP } : {})}>
             <MaterialCommunityIcons name="account-plus" size={28} color={palette.onPrimary} />
           </Pressable>
@@ -306,6 +384,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: palette.background,
   },
+  headerButton: {
+    padding: spacing.sm,
+    marginHorizontal: spacing.xs,
+  },
   scrollContent: {
     paddingHorizontal: spacing.lg,
     paddingBottom: 100,
@@ -315,7 +397,42 @@ const styles = StyleSheet.create({
   filterRow: {
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  infoCard: {
+    backgroundColor: palette.surface,
+    borderRadius: shape.medium,
+    borderWidth: 1,
+    borderColor: palette.outlineVariant,
+    padding: spacing.md,
+  },
+  infoGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
     justifyContent: 'space-between',
+    rowGap: spacing.sm,
+  },
+  infoItem: {
+    width: '48%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  infoItemFullWidth: {
+    width: '100%',
+  },
+  infoIconContainer: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: palette.primaryContainer,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  infoValue: {
+    ...typography.bodyMedium,
+    color: palette.onSurface,
+    fontFamily: 'Lexend-Regular',
+    flex: 1,
   },
   filterLink: {
     flexDirection: 'row',
@@ -328,23 +445,6 @@ const styles = StyleSheet.create({
   },
   filterTextActive: {
     color: palette.primary,
-  },
-  enrolledPill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-    backgroundColor: palette.primaryContainer,
-    borderWidth: 1,
-    borderColor: 'rgba(28, 116, 233, 0.10)',
-    borderRadius: 20,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs,
-  },
-  enrolledPillText: {
-    ...typography.labelLarge,
-    color: palette.primary,
-    fontFamily: 'Lexend-SemiBold',
-    fontWeight: '600',
   },
   listContainer: {
     gap: spacing.md,

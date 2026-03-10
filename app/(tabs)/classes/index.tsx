@@ -13,15 +13,19 @@ import { useClassList } from '@features/classes/hooks/useClassList';
 import { useClassService } from '@features/classes/hooks/useClassService';
 import { useClassStats } from '@features/classes/hooks/useClassStats';
 import { ClassEntity } from '@features/classes/types/class';
+import { ConfirmationDialog } from '@shared/components/ConfirmationDialog';
 import { ScreenHeader } from '@shared/components/ScreenHeader';
 import { SelectionToolbar } from '@shared/components/SelectionToolbar';
 import { StatCard } from '@shared/components/StatCard';
 import { palette, spacing } from '@theme/tokens';
+import { useTranslation } from 'react-i18next';
 
 const ClassesListScreen = () => {
   const router = useRouter();
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [selectedClassIds, setSelectedClassIds] = useState<Set<string>>(new Set());
+  const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   const classListQuery = useClassList();
   const classService = useClassService();
@@ -62,28 +66,19 @@ const ClassesListScreen = () => {
     setSelectedClassIds(new Set());
   }, []);
 
-  const handleDeleteSelected = useCallback(async () => {
-    const count = selectedClassIds.size;
-    Alert.alert(
-      'Delete classes',
-      `Are you sure you want to delete ${count} class${count > 1 ? 'es' : ''}? This will also delete all associated attendance records.`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await deleteClassesMutation.mutateAsync(Array.from(selectedClassIds));
-              setSelectedClassIds(new Set());
-            } catch {
-              Alert.alert('Error', 'Unable to delete classes. Please try again.');
-            }
-          },
-        },
-      ]
-    );
-  }, [selectedClassIds, deleteClassesMutation]);
+  const handleDeleteSelected = useCallback(() => {
+    setDeleteDialogOpen(true);
+  }, []);
+
+  const handleConfirmDeleteSelected = useCallback(async () => {
+    try {
+      await deleteClassesMutation.mutateAsync(Array.from(selectedClassIds));
+      setSelectedClassIds(new Set());
+      setDeleteDialogOpen(false);
+    } catch {
+      Alert.alert(t('common.error'), t('common.error'));
+    }
+  }, [selectedClassIds, deleteClassesMutation, t]);
 
   const handleEditSelected = useCallback(() => {
     if (selectedClassIds.size !== 1) return;
@@ -97,39 +92,49 @@ const ClassesListScreen = () => {
       {selectedClassIds.size > 0 ? (
         <SelectionToolbar
           count={selectedClassIds.size}
-          itemLabel="class"
+          itemType="class"
           onClose={handleClearSelection}
           onDelete={handleDeleteSelected}
           onEdit={handleEditSelected}
         />
       ) : null}
+      <ConfirmationDialog
+        visible={isDeleteDialogOpen}
+        title={t('common.delete')}
+        message={t('classes.delete_confirm', { count: selectedClassIds.size })}
+        confirmLabel={t('common.delete')}
+        cancelLabel={t('common.cancel')}
+        onConfirm={handleConfirmDeleteSelected}
+        onCancel={() => setDeleteDialogOpen(false)}
+        isConfirming={deleteClassesMutation.isPending}
+      />
       <View style={styles.container}>
         <ScreenHeader
-          title="My Classes"
-          eyebrow="WELCOME BACK"
+          title={t('classes.my_classes')}
+          eyebrow={t('classes.welcome_back')}
           showNotificationBell
         />
 
         <View style={styles.statsRow}>
           <StatCard
-            label="Classes"
+            label={t('classes.stats.classes')}
             value={String(stats.totalClasses)}
             icon="calendar-month-outline"
             variant="primary"
           />
           <StatCard
-            label="Students"
+            label={t('classes.stats.students')}
             value={String(stats.totalStudents)}
             icon="account-group-outline"
           />
           <StatCard
-            label="Today"
+            label={t('classes.stats.today')}
             value={String(stats.todaySessions)}
             icon="clock-outline"
             variant="primary"
           />
           <StatCard
-            label="Attend."
+            label={t('classes.stats.attendance')}
             value={stats.attendanceRate !== null ? `${Math.round(stats.attendanceRate * 100)}%` : '—'}
             icon="chart-line"
           />
@@ -143,15 +148,15 @@ const ClassesListScreen = () => {
             onSelectClass={handleOpenClass}
             onLongPressClass={handleLongPressClass}
             selectedClassIds={selectedClassIds}
-            emptyTitle="No classes yet"
-            emptySubtitle="Create a class to start recording attendance."
+            emptyTitle={t('classes.empty_title')}
+            emptySubtitle={t('classes.empty_subtitle')}
           />
         </View>
       </View>
 
       <Pressable
         style={styles.fab}
-        onPress={() => router.push('/(tabs)/classes/create')}
+        onPress={() => router.push({ pathname: '/(tabs)/classes/create' })}
         accessibilityRole="button"
         accessibilityLabel="Add class"
         accessibilityHint="Opens the form to create a class"

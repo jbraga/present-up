@@ -1,22 +1,23 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
-    ActivityIndicator,
-    Alert,
-    KeyboardAvoidingView,
-    Modal,
-    Platform,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    View,
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Modal,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
 } from 'react-native';
 
 import { useClassList } from '@features/classes/hooks/useClassList';
 import { useUpdateClass } from '@features/classes/hooks/useUpdateClass';
 import { CLASS_SCHEDULE_DAYS, ClassScheduleEntry } from '@features/classes/types/class';
+import { ConfirmationDialog } from '@shared/components/ConfirmationDialog';
 import { FormIconHeader } from '@shared/components/FormIconHeader';
 import { FormInput } from '@shared/components/FormInput';
 import { palette, shape, spacing, typography } from '@theme/tokens';
@@ -34,6 +35,7 @@ type ActiveTimePicker = {
 
 const EditClassScreen = () => {
   const router = useRouter();
+  const { t } = useTranslation();
   const params = useLocalSearchParams<{ classId?: string }>();
   const classId = params.classId ?? null;
 
@@ -57,6 +59,7 @@ const EditClassScreen = () => {
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [isCancelDialogOpen, setCancelDialogOpen] = useState(false);
 
   const initialThresholdString = useMemo(() => {
     if (!classData) return '50';
@@ -202,10 +205,12 @@ const EditClassScreen = () => {
       return;
     }
 
-    Alert.alert('Discard changes?', 'Your edits will be lost.', [
-      { text: 'Keep editing', style: 'cancel' },
-      { text: 'Discard', style: 'destructive', onPress: () => router.back() },
-    ]);
+    setCancelDialogOpen(true);
+  };
+
+  const handleConfirmCancel = () => {
+    setCancelDialogOpen(false);
+    router.back();
   };
 
   const behavior = Platform.OS === 'ios' ? 'padding' : undefined;
@@ -213,14 +218,14 @@ const EditClassScreen = () => {
   if (classListQuery.isLoading || !classData) {
     return (
       <>
-        <Stack.Screen options={{ title: 'Edit Class' }} />
+        <Stack.Screen options={{ title: t('classes.edit_class') }} />
         <View style={styles.centered}>
           {classListQuery.isLoading ? (
             <ActivityIndicator size="large" color={palette.primary} />
           ) : (
             <>
               <MaterialCommunityIcons name="alert-circle-outline" size={48} color={palette.onSurfaceMuted} />
-              <Text style={styles.errorTitle}>Class not found</Text>
+              <Text style={styles.errorTitle}>{t('common.error')}</Text>
             </>
           )}
         </View>
@@ -232,13 +237,22 @@ const EditClassScreen = () => {
     <>
       <Stack.Screen
         options={{
-          title: 'Edit Class',
+          title: t('classes.edit_class'),
           headerLeft: () => (
             <Pressable onPress={handleCancel} hitSlop={8} accessibilityRole="button">
               <MaterialCommunityIcons name="arrow-left" size={24} color={palette.onSurface} />
             </Pressable>
           ),
         }}
+      />
+      <ConfirmationDialog
+        visible={isCancelDialogOpen}
+        title={t('common.discard')}
+        message={t('classes.discard_changes_confirm')}
+        confirmLabel={t('common.discard')}
+        cancelLabel={t('common.cancel')}
+        onConfirm={handleConfirmCancel}
+        onCancel={() => setCancelDialogOpen(false)}
       />
       <KeyboardAvoidingView behavior={behavior} style={styles.screen}>
         <ScrollView
@@ -249,38 +263,38 @@ const EditClassScreen = () => {
 
           <FormIconHeader
             icon={classIcon as any}
-            description="Update class details, schedule, and attendance requirements."
+            description={t('classes.edit_description')}
             onPickIcon={(iconName) => setClassIcon(iconName)}
           />
 
           <FormInput
-            label="Class Name"
+            label={t('classes.name')}
             icon="book-outline"
             value={name}
             onChangeText={setName}
-            placeholder="e.g. Advanced Mathematics"
+            placeholder={t('classes.name_placeholder')}
             autoCapitalize="sentences"
             autoCorrect
             returnKeyType="next"
           />
 
           <FormInput
-            label="Instructor Name"
+            label={t('classes.instructor')}
             icon="account-outline"
             value={instructorName}
             onChangeText={setInstructorName}
-            placeholder="e.g. Dr. Sarah Smith"
+            placeholder={t('classes.instructor_placeholder')}
             autoCapitalize="words"
             autoCorrect
             returnKeyType="next"
           />
 
           <FormInput
-            label="Location (optional)"
+            label={t('classes.location')}
             icon="map-marker-outline"
             value={location}
             onChangeText={setLocation}
-            placeholder="e.g. Main Stadium — Field A"
+            placeholder={t('classes.location_placeholder')}
             autoCapitalize="sentences"
             autoCorrect
             returnKeyType="next"
@@ -289,34 +303,34 @@ const EditClassScreen = () => {
           <View style={styles.inlineFields}>
             <View style={styles.inlineField}>
               <FormInput
-                label="Capacity"
+                label={t('classes.capacity')}
                 icon="account-group-outline"
                 keyboardType="number-pad"
                 value={capacity}
                 onChangeText={handleCapacityChange}
                 onBlur={handleCapacityBlur}
-                placeholder="30"
+                placeholder={t('classes.capacity_placeholder')}
               />
             </View>
             <View style={styles.inlineField}>
               <FormInput
-                label="Min Attendance %"
+                label={t('classes.min_attendance')}
                 icon="chart-box-outline"
                 keyboardType="decimal-pad"
                 value={threshold}
                 onChangeText={handleThresholdChange}
                 onBlur={handleThresholdBlur}
-                placeholder="75"
+                placeholder={t('classes.min_attendance_placeholder')}
               />
             </View>
           </View>
 
           <View style={styles.scheduleSection}>
             <View style={styles.scheduleHeader}>
-              <Text style={styles.label}>Schedule</Text>
+              <Text style={styles.label}>{t('classes.schedule')}</Text>
               <Pressable style={styles.addScheduleButton} onPress={handleAddSchedule} accessibilityRole="button">
                 <MaterialCommunityIcons name="plus-circle" size={16} color={palette.primary} />
-                <Text style={styles.addScheduleButtonLabel}>Add Slot</Text>
+                <Text style={styles.addScheduleButtonLabel}>{t('classes.add_slot')}</Text>
               </Pressable>
             </View>
             <View style={styles.scheduleList}>
@@ -328,18 +342,18 @@ const EditClassScreen = () => {
                     </View>
                     <View style={styles.scheduleCardInfo}>
                       <Pressable onPress={() => handleOpenDayPicker(index)} accessibilityRole="button">
-                        <Text style={styles.scheduleDayText}>{entry.dayOfWeek}</Text>
+                        <Text style={styles.scheduleDayText}>{t(`common.days.${entry.dayOfWeek.toLowerCase()}` as any)}</Text>
                       </Pressable>
                       <View style={styles.scheduleTimeRow}>
                         <Pressable onPress={() => handleOpenTimePicker(index, 'startTime')} accessibilityRole="button">
                           <Text style={[styles.scheduleTimeText, !entry.startTime && styles.scheduleTimePlaceholder]}>
-                            {entry.startTime || 'Start'}
+                            {entry.startTime || t('common.start')}
                           </Text>
                         </Pressable>
                         <Text style={styles.scheduleTimeSeparator}>-</Text>
                         <Pressable onPress={() => handleOpenTimePicker(index, 'endTime')} accessibilityRole="button">
                           <Text style={[styles.scheduleTimeText, !entry.endTime && styles.scheduleTimePlaceholder]}>
-                            {entry.endTime || 'End'}
+                            {entry.endTime || t('common.end')}
                           </Text>
                         </Pressable>
                       </View>
@@ -375,7 +389,7 @@ const EditClassScreen = () => {
             onPress={handleSubmit}
             disabled={isSubmitDisabled}
             accessibilityRole="button">
-            <Text style={styles.primaryButtonText}>{isSubmitting ? 'Saving…' : 'Save Changes'}</Text>
+            <Text style={styles.primaryButtonText}>{isSubmitting ? t('common.loading') : t('common.save')}</Text>
           </Pressable>
         </View>
       </KeyboardAvoidingView>
@@ -402,7 +416,7 @@ const EditClassScreen = () => {
                   }
                 }}
                 accessibilityRole="button">
-                <Text style={styles.pickerOptionLabel}>{day}</Text>
+                <Text style={styles.pickerOptionLabel}>{t(`common.days.${day.toLowerCase()}` as any)}</Text>
               </Pressable>
             ))}
           </View>
@@ -418,7 +432,7 @@ const EditClassScreen = () => {
           <Pressable style={styles.pickerDismiss} onPress={() => setActiveTimePicker(null)} accessibilityRole="button" />
           <View style={styles.timePickerSheet}>
             <Text style={styles.timePickerTitle}>
-              {activeTimePicker?.field === 'startTime' ? 'Select start time' : 'Select end time'}
+              {activeTimePicker?.field === 'startTime' ? t('common.select_start_time') : t('common.select_end_time')}
             </Text>
             <ScrollView contentContainerStyle={styles.timePickerList} showsVerticalScrollIndicator={false}>
               {timeSlots.map((time) => {

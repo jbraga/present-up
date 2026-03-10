@@ -1,12 +1,11 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { Stack, useLocalSearchParams } from 'expo-router';
-import { useMemo, useState } from 'react';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { CreateStudentDialog } from '@features/students/components/CreateStudentDialog';
 import { useStudentsByIds } from '@features/students/hooks/useStudentsByIds';
-import { useUpsertStudent } from '@features/students/hooks/useUpsertStudent';
 import { palette, shape, spacing, typography } from '@theme/tokens';
 
 type IconName = keyof typeof MaterialCommunityIcons.glyphMap;
@@ -32,31 +31,18 @@ const InfoRow = ({
 );
 
 const StudentDetailScreen = () => {
+  const router = useRouter();
   const params = useLocalSearchParams<{ studentId?: string | string[] }>();
+  const { t, i18n } = useTranslation();
   const studentIdParam = params.studentId;
   const studentId = Array.isArray(studentIdParam) ? studentIdParam[0] : studentIdParam ?? null;
 
-  const [isEditDialogOpen, setEditDialogOpen] = useState(false);
-
   const studentsQuery = useStudentsByIds(studentId ? [studentId] : []);
-  const upsertStudentMutation = useUpsertStudent();
 
   const student = studentsQuery.data?.[0];
   const isLoading = studentsQuery.isLoading || studentsQuery.isFetching;
 
-  const handleEditStudent = async (input: {
-    id?: string;
-    firstName: string;
-    lastName: string;
-    email?: string;
-    guardianEmail?: string;
-    phoneNumber?: string;
-  }) => {
-    await upsertStudentMutation.mutateAsync(input);
-    setEditDialogOpen(false);
-  };
-
-  const fullName = student ? `${student.firstName} ${student.lastName}` : 'Student';
+  const fullName = student ? `${student.firstName} ${student.lastName}` : t('students.unknown');
 
   const initials = useMemo(() => {
     if (!student) return '?';
@@ -65,8 +51,8 @@ const StudentDetailScreen = () => {
 
   const memberSince = useMemo(() => {
     if (!student?.createdAt) return null;
-    return new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(student.createdAt);
-  }, [student]);
+    return new Intl.DateTimeFormat(i18n.language, { month: 'long', year: 'numeric' }).format(student.createdAt);
+  }, [student, i18n.language]);
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['bottom']}>
@@ -75,7 +61,9 @@ const StudentDetailScreen = () => {
           title: fullName,
           headerRight: () =>
             student ? (
-              <Pressable onPress={() => setEditDialogOpen(true)} style={styles.headerButton}>
+              <Pressable
+                onPress={() => router.push({ pathname: '/(tabs)/students/edit', params: { studentId: student.id } })}
+                style={styles.headerButton}>
                 <MaterialCommunityIcons name="pencil-outline" size={24} color={palette.onSurface} />
               </Pressable>
             ) : null,
@@ -89,8 +77,8 @@ const StudentDetailScreen = () => {
       ) : !student ? (
         <View style={styles.centered}>
           <MaterialCommunityIcons name="account-off-outline" size={48} color={palette.onSurfaceMuted} />
-          <Text style={styles.missingTitle}>Student not found</Text>
-          <Text style={styles.missingSubtitle}>This student may have been deleted.</Text>
+          <Text style={styles.missingTitle}>{t('students.empty')}</Text>
+          <Text style={styles.missingSubtitle}>{t('students.empty_search')}</Text>
         </View>
       ) : (
         <ScrollView style={styles.container} contentContainerStyle={styles.content}>
@@ -105,43 +93,32 @@ const StudentDetailScreen = () => {
             {memberSince ? (
               <View style={styles.memberBadge}>
                 <MaterialCommunityIcons name="calendar-check" size={14} color={palette.primary} />
-                <Text style={styles.memberText}>Member since {memberSince}</Text>
+                <Text style={styles.memberText}>{t('students.member_since', { date: memberSince })}</Text>
               </View>
             ) : null}
           </View>
 
           <View style={styles.card}>
-            <Text style={styles.sectionTitle}>Personal Information</Text>
-            <InfoRow icon="account" label="First name" value={student.firstName} />
-            <InfoRow icon="account" label="Last name" value={student.lastName} />
-            {student.preferredName ? (
-              <InfoRow icon="account-heart" label="Preferred name" value={student.preferredName} />
-            ) : null}
+            <Text style={styles.sectionTitle}>{t('students.personal_information')}</Text>
+            <InfoRow icon="account" label={t('students.first_name')} value={student.firstName} />
+            <InfoRow icon="account" label={t('students.last_name')} value={student.lastName} />
             {student.email ? (
-              <InfoRow icon="email-outline" label="Email" value={student.email} />
+              <InfoRow icon="email-outline" label={t('students.email')} value={student.email} />
             ) : null}
             {student.phoneNumber ? (
-              <InfoRow icon="phone-outline" label="Phone" value={student.phoneNumber} />
+              <InfoRow icon="phone-outline" label={t('students.phone')} value={student.phoneNumber} />
             ) : null}
           </View>
 
           {student.guardianEmail ? (
             <View style={styles.card}>
-              <Text style={styles.sectionTitle}>Guardian Information</Text>
-              <InfoRow icon="account-child-outline" label="Guardian email" value={student.guardianEmail} />
+              <Text style={styles.sectionTitle}>{t('students.guardian_information')}</Text>
+              <InfoRow icon="account-child-outline" label={t('students.guardian_email')} value={student.guardianEmail} />
             </View>
           ) : null}
         </ScrollView>
       )}
 
-      {student ? (
-        <CreateStudentDialog
-          visible={isEditDialogOpen}
-          onClose={() => setEditDialogOpen(false)}
-          onSubmit={handleEditStudent}
-          student={student}
-        />
-      ) : null}
     </SafeAreaView>
   );
 };

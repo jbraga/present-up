@@ -1,15 +1,16 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
-    ActivityIndicator,
-    Dimensions,
-    FlatList,
-    Pressable,
-    StyleSheet,
-    Text,
-    TextInput,
-    View,
+  ActivityIndicator,
+  Dimensions,
+  FlatList,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
 } from 'react-native';
 
 import { ATTENDANCE_STATUS, ATTENDANCE_STATUS_VALUES } from '@core/constants/attendance';
@@ -51,6 +52,7 @@ export const RecordAttendanceDialog = ({
   onClose,
   onRecorded,
 }: RecordAttendanceDialogProps) => {
+  const { t, i18n } = useTranslation();
   const [attendanceStates, setAttendanceStates] = useState<Record<string, StudentAttendanceState>>({});
   const [isSaving, setIsSaving] = useState(false);
   const [rosterSearch, setRosterSearch] = useState('');
@@ -84,12 +86,12 @@ export const RecordAttendanceDialog = ({
   }, [date]);
 
   const dateFormatted = useMemo(() => {
-    return new Intl.DateTimeFormat('en-US', {
+    return new Intl.DateTimeFormat(i18n.language || 'en-US', {
       weekday: 'long',
-      month: 'short',
+      month: 'long',
       day: 'numeric',
     }).format(targetDate);
-  }, [targetDate]);
+  }, [targetDate, i18n.language]);
 
   const filteredStudents = useMemo(() => {
     if (!rosterSearch.trim()) return students;
@@ -259,7 +261,7 @@ export const RecordAttendanceDialog = ({
                 styles.statusPillLabel,
                 state.status === ATTENDANCE_STATUS.present ? styles.statusPillLabelActive : styles.statusPillLabelInactive,
               ]}>
-              Present
+              {t('attendance.mark_present')}
             </Text>
           </Pressable>
           <Pressable
@@ -276,7 +278,7 @@ export const RecordAttendanceDialog = ({
                 styles.statusPillLabel,
                 state.status === ATTENDANCE_STATUS.absent ? styles.statusPillLabelActive : styles.statusPillLabelInactive,
               ]}>
-              Absent
+              {t('attendance.mark_absent')}
             </Text>
           </Pressable>
           <Pressable
@@ -293,7 +295,7 @@ export const RecordAttendanceDialog = ({
                 styles.statusPillLabel,
                 state.status === ATTENDANCE_STATUS.excused ? styles.statusPillLabelActive : styles.statusPillLabelInactive,
               ]}>
-              Justified
+              {t('attendance.mark_excused')}
             </Text>
           </Pressable>
         </View>
@@ -321,8 +323,7 @@ export const RecordAttendanceDialog = ({
 
           <View style={styles.headerRow}>
             <View style={styles.headerTitles}>
-              <Text style={styles.sessionLabel}>SESSION ACTIVE</Text>
-              <Text style={styles.className} numberOfLines={1}>{className || 'Record Attendance'}</Text>
+              <Text style={styles.className} numberOfLines={1}>{className || t('attendance.record_dialog.title')}</Text>
             </View>
           </View>
 
@@ -330,7 +331,7 @@ export const RecordAttendanceDialog = ({
             <Text style={styles.dateLabel}>{dateFormatted}</Text>
             <View style={styles.registeredBadge}>
               <MaterialCommunityIcons name="account-group" size={14} color={palette.primary} />
-              <Text style={styles.registeredText}>{students.length} Registered</Text>
+              <Text style={styles.registeredText}>{students.length} {t('report.enrolled')}</Text>
             </View>
           </View>
 
@@ -338,20 +339,20 @@ export const RecordAttendanceDialog = ({
             <SearchInput
               value={rosterSearch}
               onChangeText={setRosterSearch}
-              placeholder="Search roster..."
+              placeholder={t('common.search')}
             />
           ) : null}
 
           {isLoading ? (
             <View style={styles.centerState}>
               <ActivityIndicator color={palette.primary} size="large" />
-              <Text style={styles.centerStateText}>Loading students...</Text>
+              <Text style={styles.centerStateText}>{t('attendance.loading_data')}</Text>
             </View>
           ) : !hasStudents ? (
             <View style={styles.centerState}>
               <MaterialCommunityIcons name="account-off-outline" size={48} color={palette.onSurfaceMuted} />
-              <Text style={styles.centerStateTitle}>No enrolled students</Text>
-              <Text style={styles.centerStateText}>Add students to this class from the class detail screen.</Text>
+              <Text style={styles.centerStateTitle}>{t('classes.details.empty_title')}</Text>
+              <Text style={styles.centerStateText}>{t('classes.details.empty_subtitle')}</Text>
             </View>
           ) : (
             <FlatList
@@ -379,7 +380,7 @@ export const RecordAttendanceDialog = ({
             ) : (
               <>
                 <MaterialCommunityIcons name="cloud-upload" size={20} color={palette.onPrimary} />
-                <Text style={styles.submitButtonText}>Submit Attendance</Text>
+                <Text style={styles.submitButtonText}>{t('attendance.record_dialog.save')}</Text>
               </>
             )}
           </Pressable>

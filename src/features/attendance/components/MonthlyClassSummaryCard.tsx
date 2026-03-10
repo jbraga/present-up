@@ -1,5 +1,6 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { formatPercentage } from '@shared/utils/formatPercentage';
@@ -12,6 +13,7 @@ type MonthlyClassSummaryCardProps = {
 };
 
 export const MonthlyClassSummaryCard = memo(({ summary, onPress }: MonthlyClassSummaryCardProps) => {
+  const { t } = useTranslation();
   const isAtRisk = summary.attendanceRate < summary.minAttendancePercentage;
 
   return (
@@ -40,11 +42,11 @@ export const MonthlyClassSummaryCard = memo(({ summary, onPress }: MonthlyClassS
       <View style={styles.metricsRow}>
         <View style={styles.metric}>
           <MaterialCommunityIcons name="calendar-check" size={16} color={palette.onSurfaceVariant} />
-          <Text style={styles.metricText}>{summary.totalSessionsRecorded} sessions</Text>
+          <Text style={styles.metricText}>{summary.totalSessionsRecorded} {t('report.sessions').toLowerCase()}</Text>
         </View>
         <View style={styles.metric}>
           <MaterialCommunityIcons name="account-group" size={16} color={palette.onSurfaceVariant} />
-          <Text style={styles.metricText}>{summary.totalEnrolled} students</Text>
+          <Text style={styles.metricText}>{summary.totalEnrolled} {t('students.title').toLowerCase()}</Text>
         </View>
       </View>
     </Pressable>

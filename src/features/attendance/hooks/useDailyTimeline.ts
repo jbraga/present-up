@@ -61,10 +61,15 @@ const computeSessionStatus = (
   startTime: string,
   endTime: string,
   hasRecords: boolean,
-  isToday: boolean,
+  selectedDateStr: string,
+  todayStr: string,
 ): SessionStatus => {
-  if (!isToday) {
+  if (selectedDateStr < todayStr) {
     return hasRecords ? 'completed' : 'not_recorded';
+  }
+
+  if (selectedDateStr > todayStr) {
+    return 'upcoming';
   }
 
   const now = new Date();
@@ -92,7 +97,6 @@ export const useDailyTimeline = (selectedDate: Date): DailyTimelineResult => {
   const selectedDayName = JS_DAY_TO_SCHEDULE_DAY[selectedDate.getDay()];
   const selectedDateStr = dateKey(selectedDate);
   const todayStr = dateKey(new Date());
-  const isToday = selectedDateStr === todayStr;
 
   const scheduledClasses = useMemo(() => {
     return classes
@@ -176,14 +180,15 @@ export const useDailyTimeline = (selectedDate: Date): DailyTimelineResult => {
             scheduleEntry.startTime,
             scheduleEntry.endTime,
             hasRecords,
-            isToday,
+            selectedDateStr,
+            todayStr,
           ),
           records: dateRecords,
           studentIds: roster,
         } satisfies DailyTimelineEntry;
       })
       .sort((a, b) => parseTimeToMinutes(a.startTime) - parseTimeToMinutes(b.startTime));
-  }, [scheduledClasses, rosterQueries, recordQueries, selectedDateStr, isToday]);
+  }, [scheduledClasses, rosterQueries, recordQueries, selectedDateStr, todayStr]);
 
   const refetch = () => {
     classListQuery.refetch();

@@ -4,14 +4,14 @@ import { ATTENDANCE_STATUS, AttendanceStatus } from '@core/constants/attendance'
 import { logger } from '@core/utils/logger';
 
 import {
-    AttendanceRecord,
-    AttendanceSummary,
+  AttendanceRecord,
+  AttendanceSummary,
 } from '@features/attendance/types/attendance';
 import {
-    ClassEntity,
-    ClassScheduleEntry,
-    classScheduleEntrySchema,
-    CreateClassInput,
+  ClassEntity,
+  ClassScheduleEntry,
+  classScheduleEntrySchema,
+  CreateClassInput,
 } from '@features/classes/types/class';
 import { StudentEntity, UpsertStudentInput } from '@features/students/types/student';
 
@@ -27,7 +27,6 @@ type ClassRow = {
   capacity: number | null;
   location: string;
   icon_name: string;
-  image_uri: string;
   created_at: string;
   updated_at: string | null;
 };
@@ -36,7 +35,6 @@ type StudentRow = {
   id: string;
   first_name: string;
   last_name: string;
-  preferred_name: string | null;
   email: string | null;
   guardian_email: string | null;
   phone_number: string | null;
@@ -81,8 +79,8 @@ export class SQLiteService implements DataService {
     const now = new Date().toISOString();
 
     await this.db.runAsync(
-      `INSERT INTO classes (id, name, instructor_email, instructor_name, min_attendance_percentage, schedule, capacity, location, icon_name, image_uri, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO classes (id, name, instructor_email, instructor_name, min_attendance_percentage, schedule, capacity, location, icon_name, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       id,
       input.name,
       input.instructorEmail,
@@ -92,7 +90,6 @@ export class SQLiteService implements DataService {
       input.capacity ?? null,
       input.location ?? '',
       input.iconName ?? '',
-      input.imageUri ?? '',
       now,
       now,
     );
@@ -118,15 +115,13 @@ export class SQLiteService implements DataService {
     minAttendancePercentage: number,
     location?: string,
     iconName?: string,
-    imageUri?: string,
   ): Promise<void> {
     const now = new Date().toISOString();
 
     const result = await this.db.runAsync(
       `UPDATE classes
        SET name = ?, instructor_name = ?, schedule = ?, capacity = ?,
-           min_attendance_percentage = ?, location = ?, icon_name = ?,
-           image_uri = ?, updated_at = ?
+           min_attendance_percentage = ?, location = ?, icon_name = ?, updated_at = ?
        WHERE id = ?`,
       name,
       instructorName,
@@ -135,7 +130,6 @@ export class SQLiteService implements DataService {
       minAttendancePercentage,
       location ?? '',
       iconName ?? '',
-      imageUri ?? '',
       now,
       classId,
     );
@@ -163,12 +157,11 @@ export class SQLiteService implements DataService {
     if (isUpdate) {
       await this.db.runAsync(
         `UPDATE students
-         SET first_name = ?, last_name = ?, preferred_name = ?, email = ?,
+         SET first_name = ?, last_name = ?, email = ?,
              guardian_email = ?, phone_number = ?, updated_at = ?
          WHERE id = ?`,
         input.firstName,
         input.lastName,
-        input.preferredName ?? null,
         input.email ?? null,
         input.guardianEmail ?? null,
         input.phoneNumber ?? null,
@@ -177,12 +170,11 @@ export class SQLiteService implements DataService {
       );
     } else {
       await this.db.runAsync(
-        `INSERT INTO students (id, first_name, last_name, preferred_name, email, guardian_email, phone_number, created_at, updated_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        `INSERT INTO students (id, first_name, last_name, email, guardian_email, phone_number, created_at, updated_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
         id,
         input.firstName,
         input.lastName,
-        input.preferredName ?? null,
         input.email ?? null,
         input.guardianEmail ?? null,
         input.phoneNumber ?? null,
@@ -219,10 +211,8 @@ export class SQLiteService implements DataService {
       rows = await this.db.getAllAsync<StudentRow>(
         `SELECT * FROM students
          WHERE LOWER(first_name || ' ' || last_name) LIKE ?
-            OR LOWER(COALESCE(preferred_name, '')) LIKE ?
          ORDER BY first_name, last_name
          LIMIT ? OFFSET ?`,
-        pattern,
         pattern,
         limit,
         offset,
@@ -255,12 +245,10 @@ export class SQLiteService implements DataService {
   }
 
   async assignStudentToClass(classId: string, studentId: string): Promise<void> {
-    const now = new Date().toISOString();
     await this.db.runAsync(
-      'INSERT OR IGNORE INTO class_roster (class_id, student_id, assigned_at) VALUES (?, ?, ?)',
+      'INSERT OR IGNORE INTO class_roster (class_id, student_id) VALUES (?, ?)',
       classId,
       studentId,
-      now,
     );
   }
 
@@ -374,7 +362,6 @@ export class SQLiteService implements DataService {
       capacity: row.capacity,
       location: row.location,
       iconName: row.icon_name,
-      imageUri: row.image_uri,
       createdAt: new Date(row.created_at),
       updatedAt: row.updated_at ? new Date(row.updated_at) : undefined,
     };
@@ -385,7 +372,6 @@ export class SQLiteService implements DataService {
       id: row.id,
       firstName: row.first_name,
       lastName: row.last_name,
-      preferredName: row.preferred_name || undefined,
       email: row.email || undefined,
       guardianEmail: row.guardian_email || undefined,
       phoneNumber: row.phone_number || undefined,

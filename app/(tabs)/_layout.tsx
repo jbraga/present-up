@@ -1,6 +1,7 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -8,6 +9,7 @@ import { palette } from '@theme/tokens';
 
 export default function TabLayout() {
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
   
   return (
     <Tabs
@@ -35,7 +37,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="classes"
         options={{
-          title: 'Classes',
+          title: t('navigation.classes'),
           tabBarIcon: ({ color, focused }) => (
             <TabIcon
               name={focused ? 'calendar-month' : 'calendar-month-outline'}
@@ -48,7 +50,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="attendance"
         options={{
-          title: 'Attendance',
+          title: t('navigation.attendance'),
           tabBarIcon: ({ color, focused }) => (
             <TabIcon
               name={focused ? 'check-circle' : 'check-circle-outline'}
@@ -61,7 +63,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="students"
         options={{
-          title: 'Students',
+          title: t('navigation.students'),
           tabBarIcon: ({ color, focused }) => (
             <TabIcon
               name={focused ? 'account-multiple' : 'account-multiple-outline'}

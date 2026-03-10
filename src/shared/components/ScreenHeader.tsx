@@ -14,6 +14,7 @@ type ActionButton = {
 
 type ScreenHeaderProps = {
   title: string;
+  titleIcon?: IconName;
   eyebrow?: string;
   actions?: ActionButton[];
   showNotificationBell?: boolean;
@@ -22,6 +23,7 @@ type ScreenHeaderProps = {
 
 export const ScreenHeader = ({
   title,
+  titleIcon,
   eyebrow,
   actions,
   showNotificationBell,
@@ -32,7 +34,10 @@ export const ScreenHeader = ({
       <View style={styles.row}>
         <View style={styles.left}>
           {eyebrow ? <Text style={styles.eyebrow}>{eyebrow}</Text> : null}
-          <Text style={styles.title}>{title}</Text>
+          <View style={styles.titleRow}>
+            {titleIcon ? <MaterialCommunityIcons name={titleIcon} size={24} color={palette.onSurface} /> : null}
+            <Text style={styles.title}>{title}</Text>
+          </View>
         </View>
         <View style={styles.right}>
           {actions?.map((action) => (
@@ -90,6 +95,11 @@ const styles = StyleSheet.create({
     color: palette.onSurface,
     fontFamily: 'Lexend-SemiBold',
     fontWeight: '600',
+  },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
   },
   actionButton: {
     width: 48,

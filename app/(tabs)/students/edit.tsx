@@ -1,26 +1,28 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
-    ActivityIndicator,
-    Alert,
-    KeyboardAvoidingView,
-    Platform,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    View,
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
 } from 'react-native';
 
 import { useStudentList } from '@features/students/hooks/useStudentList';
 import { useUpsertStudent } from '@features/students/hooks/useUpsertStudent';
+import { ConfirmationDialog } from '@shared/components/ConfirmationDialog';
 import { FormIconHeader } from '@shared/components/FormIconHeader';
 import { FormInput } from '@shared/components/FormInput';
 import { palette, spacing, typography } from '@theme/tokens';
 
 const EditStudentScreen = () => {
   const router = useRouter();
+  const { t } = useTranslation();
   const params = useLocalSearchParams<{ studentId?: string }>();
   const studentId = params.studentId ?? null;
 
@@ -40,6 +42,7 @@ const EditStudentScreen = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [isCancelDialogOpen, setCancelDialogOpen] = useState(false);
 
   useEffect(() => {
     if (studentData && !isInitialized) {
@@ -87,10 +90,12 @@ const EditStudentScreen = () => {
       return;
     }
 
-    Alert.alert('Discard changes?', 'Your edits will be lost.', [
-      { text: 'Keep editing', style: 'cancel' },
-      { text: 'Discard', style: 'destructive', onPress: () => router.back() },
-    ]);
+    setCancelDialogOpen(true);
+  };
+
+  const handleConfirmCancel = () => {
+    setCancelDialogOpen(false);
+    router.replace({ pathname: '/(tabs)/students' });
   };
 
   const behavior = Platform.OS === 'ios' ? 'padding' : undefined;
@@ -98,14 +103,14 @@ const EditStudentScreen = () => {
   if (studentListQuery.isLoading || !studentData) {
     return (
       <>
-        <Stack.Screen options={{ title: 'Edit Student' }} />
+        <Stack.Screen options={{ title: t('students.edit_student') }} />
         <View style={styles.centered}>
           {studentListQuery.isLoading ? (
             <ActivityIndicator size="large" color={palette.primary} />
           ) : (
             <>
               <MaterialCommunityIcons name="alert-circle-outline" size={48} color={palette.onSurfaceMuted} />
-              <Text style={styles.errorTitle}>Student not found</Text>
+              <Text style={styles.errorTitle}>{t('common.error')}</Text>
             </>
           )}
         </View>
@@ -117,13 +122,22 @@ const EditStudentScreen = () => {
     <>
       <Stack.Screen
         options={{
-          title: 'Edit Student',
+          title: t('students.edit_student'),
           headerLeft: () => (
             <Pressable onPress={handleCancel} hitSlop={8} accessibilityRole="button">
               <MaterialCommunityIcons name="arrow-left" size={24} color={palette.onSurface} />
             </Pressable>
           ),
         }}
+      />
+      <ConfirmationDialog
+        visible={isCancelDialogOpen}
+        title={t('common.discard')}
+        message={t('students.discard_changes_confirm')}
+        confirmLabel={t('common.discard')}
+        cancelLabel={t('common.cancel')}
+        onConfirm={handleConfirmCancel}
+        onCancel={() => setCancelDialogOpen(false)}
       />
       <KeyboardAvoidingView behavior={behavior} style={styles.screen}>
         <ScrollView
@@ -134,11 +148,11 @@ const EditStudentScreen = () => {
 
           <FormIconHeader
             icon="account-edit-outline"
-            description="Update the student's information below."
+            description={t('students.edit_student')}
           />
 
           <FormInput
-            label="First Name"
+            label={t('students.first_name')}
             icon="account-outline"
             value={firstName}
             onChangeText={setFirstName}
@@ -149,7 +163,7 @@ const EditStudentScreen = () => {
           />
 
           <FormInput
-            label="Last Name"
+            label={t('students.last_name')}
             icon="account-outline"
             value={lastName}
             onChangeText={setLastName}
@@ -160,7 +174,7 @@ const EditStudentScreen = () => {
           />
 
           <FormInput
-            label="Student Email (optional)"
+            label={t('students.email')}
             icon="email-outline"
             value={email}
             onChangeText={setEmail}
@@ -171,18 +185,19 @@ const EditStudentScreen = () => {
           />
 
           <FormInput
-            label="Guardian Email (optional)"
-            icon="email-outline"
+            label={t('students.guardian_email')}
+            icon="account-child-outline"
             value={guardianEmail}
             onChangeText={setGuardianEmail}
-            placeholder="e.g. parent@email.com"
+            placeholder="e.g. parent@example.com"
             keyboardType="email-address"
             autoCapitalize="none"
+            autoCorrect={false}
             returnKeyType="next"
           />
 
           <FormInput
-            label="Phone (optional)"
+            label={t('students.phone')}
             icon="phone-outline"
             value={phoneNumber}
             onChangeText={setPhoneNumber}
@@ -200,7 +215,7 @@ const EditStudentScreen = () => {
             onPress={handleSubmit}
             disabled={isSubmitDisabled}
             accessibilityRole="button">
-            <Text style={styles.primaryButtonText}>{isSubmitting ? 'Saving…' : 'Save Changes'}</Text>
+            <Text style={styles.primaryButtonText}>{isSubmitting ? t('common.loading') : t('common.save')}</Text>
           </Pressable>
         </View>
       </KeyboardAvoidingView>

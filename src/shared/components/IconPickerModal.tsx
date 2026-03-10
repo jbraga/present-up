@@ -1,15 +1,16 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useCallback, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   FlatList,
   Modal,
   Pressable,
-  SafeAreaView,
   StyleSheet,
   Text,
   TextInput,
   View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { palette, shape, spacing, typography } from '@theme/tokens';
 
@@ -218,6 +219,7 @@ const CURATED_ICONS: IconEntry[] = [
 const COLUMN_COUNT = 5;
 
 export const IconPickerModal = ({ visible, onClose, onSelect, selectedIcon }: IconPickerModalProps) => {
+  const { t } = useTranslation();
   const [search, setSearch] = useState('');
 
   const filteredIcons = useMemo(() => {
@@ -268,9 +270,9 @@ export const IconPickerModal = ({ visible, onClose, onSelect, selectedIcon }: Ic
 
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={handleClose}>
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={styles.container} edges={['bottom']}>
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>Choose Icon</Text>
+          <Text style={styles.headerTitle}>{t('classes.choose_icon')}</Text>
           <Pressable onPress={handleClose} hitSlop={12} accessibilityRole="button" accessibilityLabel="Close">
             <MaterialCommunityIcons name="close" size={24} color={palette.onSurface} />
           </Pressable>
@@ -280,7 +282,7 @@ export const IconPickerModal = ({ visible, onClose, onSelect, selectedIcon }: Ic
           <MaterialCommunityIcons name="magnify" size={20} color={palette.onSurfaceMuted} />
           <TextInput
             style={styles.searchInput}
-            placeholder="Search icons..."
+            placeholder={t('classes.search_icons')}
             placeholderTextColor={palette.onSurfaceMuted}
             value={search}
             onChangeText={setSearch}
@@ -304,7 +306,7 @@ export const IconPickerModal = ({ visible, onClose, onSelect, selectedIcon }: Ic
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
-              <Text style={styles.emptyText}>No icons match your search</Text>
+              <Text style={styles.emptyText}>{t('classes.no_icons_match')}</Text>
             </View>
           }
         />

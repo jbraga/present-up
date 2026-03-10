@@ -16,7 +16,6 @@ export interface DataService {
     minAttendancePercentage: number,
     location?: string,
     iconName?: string,
-    imageUri?: string,
   ) => Promise<void>;
   upsertStudent: (input: UpsertStudentInput) => Promise<StudentEntity>;
   assignStudentToClass: (classId: string, studentId: string) => Promise<void>;

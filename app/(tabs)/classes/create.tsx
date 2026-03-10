@@ -1,8 +1,8 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Stack, useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
-  Alert,
   KeyboardAvoidingView,
   Modal,
   Platform,
@@ -16,6 +16,7 @@ import {
 import { useClassList } from '@features/classes/hooks/useClassList';
 import { useCreateClass } from '@features/classes/hooks/useCreateClass';
 import { CLASS_SCHEDULE_DAYS, ClassScheduleEntry } from '@features/classes/types/class';
+import { ConfirmationDialog } from '@shared/components/ConfirmationDialog';
 import { FormIconHeader } from '@shared/components/FormIconHeader';
 import { FormInput } from '@shared/components/FormInput';
 import { palette, shape, spacing, typography } from '@theme/tokens';
@@ -35,6 +36,7 @@ const TIME_OPTIONS = generateTimeOptions();
 
 const CreateClassScreen = () => {
   const router = useRouter();
+  const { t } = useTranslation();
   const createClassMutation = useCreateClass();
   const classListQuery = useClassList();
 
@@ -54,6 +56,7 @@ const CreateClassScreen = () => {
   const [activeTimePicker, setActiveTimePicker] = useState<ActiveTimePicker | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isCancelDialogOpen, setCancelDialogOpen] = useState(false);
 
   const hasInvalidSchedule = useMemo(
     () =>
@@ -276,13 +279,15 @@ const CreateClassScreen = () => {
     }
 
     if (name.trim() || instructorName.trim() || capacity.trim() || location.trim()) {
-      Alert.alert('Discard changes?', 'Your form data will be lost.', [
-        { text: 'Keep editing', style: 'cancel' },
-        { text: 'Discard', style: 'destructive', onPress: () => router.back() },
-      ]);
+      setCancelDialogOpen(true);
     } else {
       router.back();
     }
+  };
+
+  const handleConfirmCancel = () => {
+    setCancelDialogOpen(false);
+    router.back();
   };
 
   const behavior = Platform.OS === 'ios' ? 'padding' : undefined;
@@ -291,13 +296,22 @@ const CreateClassScreen = () => {
     <>
       <Stack.Screen
         options={{
-          title: 'Create Class',
+          title: t('classes.add_new'),
           headerLeft: () => (
             <Pressable onPress={handleCancel} hitSlop={8} accessibilityRole="button">
               <MaterialCommunityIcons name="arrow-left" size={24} color={palette.onSurface} />
             </Pressable>
           ),
         }}
+      />
+      <ConfirmationDialog
+        visible={isCancelDialogOpen}
+        title={t('common.discard')}
+        message={t('classes.discard_changes_confirm')}
+        confirmLabel={t('common.discard')}
+        cancelLabel={t('common.cancel')}
+        onConfirm={handleConfirmCancel}
+        onCancel={() => setCancelDialogOpen(false)}
       />
       <KeyboardAvoidingView behavior={behavior} style={styles.screen}>
         <ScrollView
@@ -308,38 +322,38 @@ const CreateClassScreen = () => {
 
           <FormIconHeader
             icon={classIcon as any}
-            description="Define the details for your new class. Students will use the Class ID to join."
+            description={t('classes.create_description')}
             onPickIcon={(iconName) => setClassIcon(iconName)}
           />
 
           <FormInput
-            label="Class Name"
+            label={t('classes.name')}
             icon="book-outline"
             value={name}
             onChangeText={setName}
-            placeholder="e.g. Advanced Mathematics"
+            placeholder={t('classes.name_placeholder')}
             autoCapitalize="sentences"
             autoCorrect
             returnKeyType="next"
           />
 
           <FormInput
-            label="Instructor Name"
+            label={t('classes.instructor')}
             icon="account-outline"
             value={instructorName}
             onChangeText={setInstructorName}
-            placeholder="e.g. Dr. Sarah Smith"
+            placeholder={t('classes.instructor_placeholder')}
             autoCapitalize="words"
             autoCorrect
             returnKeyType="next"
           />
 
           <FormInput
-            label="Location (optional)"
+            label={t('classes.location')}
             icon="map-marker-outline"
             value={location}
             onChangeText={setLocation}
-            placeholder="e.g. Main Stadium — Field A"
+            placeholder={t('classes.location_placeholder')}
             autoCapitalize="sentences"
             autoCorrect
             returnKeyType="next"
@@ -348,34 +362,34 @@ const CreateClassScreen = () => {
           <View style={styles.inlineFields}>
             <View style={styles.inlineField}>
               <FormInput
-                label="Capacity"
+                label={t('classes.capacity')}
                 icon="account-group-outline"
                 keyboardType="number-pad"
                 value={capacity}
                 onChangeText={handleCapacityChange}
                 onBlur={handleCapacityBlur}
-                placeholder="30"
+                placeholder={t('classes.capacity_placeholder')}
               />
             </View>
             <View style={styles.inlineField}>
               <FormInput
-                label="Min Attendance %"
+                label={t('classes.min_attendance')}
                 icon="chart-box-outline"
                 keyboardType="decimal-pad"
                 value={threshold}
                 onChangeText={handleThresholdChange}
                 onBlur={handleThresholdBlur}
-                placeholder="75"
+                placeholder={t('classes.min_attendance_placeholder')}
               />
             </View>
           </View>
 
           <View style={styles.scheduleSection}>
             <View style={styles.scheduleHeader}>
-              <Text style={styles.label}>Schedule</Text>
+              <Text style={styles.label}>{t('classes.schedule')}</Text>
               <Pressable style={styles.addScheduleButton} onPress={handleAddSchedule} accessibilityRole="button">
                 <MaterialCommunityIcons name="plus-circle" size={16} color={palette.primary} />
-                <Text style={styles.addScheduleButtonLabel}>Add Slot</Text>
+                <Text style={styles.addScheduleButtonLabel}>{t('classes.add_slot')}</Text>
               </Pressable>
             </View>
             <View style={styles.scheduleList}>
@@ -387,18 +401,18 @@ const CreateClassScreen = () => {
                     </View>
                     <View style={styles.scheduleCardInfo}>
                       <Pressable onPress={() => handleOpenDayPicker(index)} accessibilityRole="button">
-                        <Text style={styles.scheduleDayText}>{entry.dayOfWeek}</Text>
+                        <Text style={styles.scheduleDayText}>{t(`common.days.${entry.dayOfWeek.toLowerCase()}` as any)}</Text>
                       </Pressable>
                       <View style={styles.scheduleTimeRow}>
                         <Pressable onPress={() => handleOpenTimePicker(index, 'startTime')} accessibilityRole="button">
                           <Text style={[styles.scheduleTimeText, !entry.startTime && styles.scheduleTimePlaceholder]}>
-                            {entry.startTime || 'Start'}
+                            {entry.startTime || t('common.start')}
                           </Text>
                         </Pressable>
                         <Text style={styles.scheduleTimeSeparator}>-</Text>
                         <Pressable onPress={() => handleOpenTimePicker(index, 'endTime')} accessibilityRole="button">
                           <Text style={[styles.scheduleTimeText, !entry.endTime && styles.scheduleTimePlaceholder]}>
-                            {entry.endTime || 'End'}
+                            {entry.endTime || t('common.end')}
                           </Text>
                         </Pressable>
                       </View>
@@ -434,7 +448,7 @@ const CreateClassScreen = () => {
             onPress={handleSubmit}
             disabled={isSubmitDisabled}
             accessibilityRole="button">
-            <Text style={styles.primaryButtonText}>{isSubmitting ? 'Saving…' : 'Create Class'}</Text>
+            <Text style={styles.primaryButtonText}>{isSubmitting ? t('common.loading') : t('classes.add_new')}</Text>
             {!isSubmitting ? (
               <MaterialCommunityIcons name="plus-circle" size={20} color={palette.onPrimary} />
             ) : null}
@@ -465,7 +479,7 @@ const CreateClassScreen = () => {
                   setActiveDayPickerIndex(null);
                 }}
                 accessibilityRole="button">
-                <Text style={styles.pickerOptionLabel}>{day}</Text>
+                <Text style={styles.pickerOptionLabel}>{t(`common.days.${day.toLowerCase()}` as any)}</Text>
               </Pressable>
             ))}
           </View>
@@ -481,7 +495,7 @@ const CreateClassScreen = () => {
           <Pressable style={styles.pickerDismiss} onPress={() => setActiveTimePicker(null)} accessibilityRole="button" />
           <View style={styles.timePickerSheet}>
             <Text style={styles.timePickerTitle}>
-              {activeTimePicker?.field === 'startTime' ? 'Select start time' : 'Select end time'}
+              {activeTimePicker?.field === 'startTime' ? t('common.select_start_time') : t('common.select_end_time')}
             </Text>
             <ScrollView contentContainerStyle={styles.timePickerList} showsVerticalScrollIndicator={false}>
               {TIME_OPTIONS.map((option) => {

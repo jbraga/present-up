@@ -1,18 +1,23 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { palette, spacing, typography } from '@theme/tokens';
 
 export type SelectionToolbarProps = {
   count: number;
-  itemLabel?: string;
+  itemType: 'class' | 'student';
   onClose: () => void;
   onDelete: () => void;
   onEdit?: () => void;
 };
 
-export const SelectionToolbar = ({ count, itemLabel = 'item', onClose, onDelete, onEdit }: SelectionToolbarProps) => {
-  const plural = count === 1 ? itemLabel : `${itemLabel}s`;
+export const SelectionToolbar = ({ count, itemType, onClose, onDelete, onEdit }: SelectionToolbarProps) => {
+  const { t } = useTranslation();
+  const isSingular = count === 1;
+  
+  // Gets keys like 'common.selected_class_singular', 'common.selected_student_plural'
+  const selectionText = t(`common.selected_${itemType}_${isSingular ? 'singular' : 'plural'}`);
 
   return (
     <View style={styles.container}>
@@ -21,8 +26,8 @@ export const SelectionToolbar = ({ count, itemLabel = 'item', onClose, onDelete,
           <MaterialCommunityIcons name="close" size={24} color={palette.onSurfaceVariant} />
         </Pressable>
         <View style={styles.textColumn}>
-          <Text style={styles.eyebrow}>SELECTION ACTIVE</Text>
-          <Text style={styles.title}>{count} {plural} selected</Text>
+          <Text style={styles.eyebrow}>{t('attendance.selection_active')}</Text>
+          <Text style={styles.title}>{count} {selectionText}</Text>
         </View>
       </View>
       <View style={styles.actions}>
@@ -31,7 +36,7 @@ export const SelectionToolbar = ({ count, itemLabel = 'item', onClose, onDelete,
             onPress={onEdit}
             style={styles.editButton}
             accessibilityRole="button"
-            accessibilityLabel={`Edit ${itemLabel}`}>
+            accessibilityLabel={`Edit ${selectionText}`}>
             <MaterialCommunityIcons name="pencil-outline" size={22} color={palette.primary} />
           </Pressable>
         ) : null}
@@ -39,7 +44,7 @@ export const SelectionToolbar = ({ count, itemLabel = 'item', onClose, onDelete,
           onPress={onDelete}
           style={styles.deleteButton}
           accessibilityRole="button"
-          accessibilityLabel={`Delete ${count} ${plural}`}>
+          accessibilityLabel={`Delete ${count} ${selectionText}`}>
           <MaterialCommunityIcons name="delete-outline" size={22} color={palette.error} />
         </Pressable>
       </View>

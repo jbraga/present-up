@@ -2,7 +2,7 @@ import { Stack } from 'expo-router';
 
 import { palette } from '@theme/tokens';
 
-export default function StudentsDetailStack() {
+export default function AttendanceStack() {
   return (
     <Stack
       screenOptions={{
@@ -15,7 +15,7 @@ export default function StudentsDetailStack() {
         },
         headerShadowVisible: false,
       }}>
-      <Stack.Screen name="[studentId]" options={{ title: 'Student' }} />
+      <Stack.Screen name="index" options={{ headerShown: false }} />
     </Stack>
   );
 }

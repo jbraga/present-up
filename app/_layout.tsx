@@ -1,3 +1,5 @@
+import '../src/shared/localization/i18n';
+
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
@@ -22,7 +24,7 @@ export default function RootLayout() {
     'Lexend-Regular': require('../assets/fonts/Lexend-Regular.ttf'),
     'Lexend-Medium': require('../assets/fonts/Lexend-Medium.ttf'),
     'Lexend-SemiBold': require('../assets/fonts/Lexend-SemiBold.ttf'),
-    'Lexend-Bold': require('../assets/fonts/Lexend-Bold.ttf'),
+    'Lexend-Bold': require('../assets/fonts/Lexend-Bold.ttf')
   });
 
   useEffect(() => {
@@ -40,7 +42,6 @@ export default function RootLayout() {
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="students" options={{ headerShown: false }} />
         </Stack>
         <StatusBar style="auto" />
       </ThemeProvider>

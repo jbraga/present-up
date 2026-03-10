@@ -1,5 +1,6 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Alert, Modal, Pressable, RefreshControl, ScrollView, StyleSheet, Text, useWindowDimensions, View, type LayoutChangeEvent } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -18,6 +19,7 @@ import { palette, shape, spacing, typography } from '@theme/tokens';
 
 const AttendanceScreen = () => {
   const { width: screenWidth } = useWindowDimensions();
+  const { t } = useTranslation();
   const dayPickerRef = useRef<ScrollView>(null);
   const monthPickerRef = useRef<ScrollView>(null);
   const [dayPickerViewportWidth, setDayPickerViewportWidth] = useState(0);
@@ -342,14 +344,15 @@ const AttendanceScreen = () => {
     <SafeAreaView style={styles.safeArea} edges={['top']}>
       <View style={styles.container}>
         <ScreenHeader
-          title="Attendance"
+          title={t('attendance.title')}
+          titleIcon="check-circle-outline"
           actions={headerActions}
         />
 
         {isGeneratingReport ? (
           <View style={styles.reportStatusContainer}>
             <ActivityIndicator size="small" color={palette.primary} />
-            <Text style={styles.reportStatusText}>Generating monthly report PDF...</Text>
+            <Text style={styles.reportStatusText}>{t('attendance.generating_report')}</Text>
           </View>
         ) : null}
 
@@ -357,12 +360,12 @@ const AttendanceScreen = () => {
           <Pressable
             style={[styles.toggleButton, viewMode === 'day' && styles.toggleButtonActive]}
             onPress={() => setViewMode('day')}>
-            <Text style={[styles.toggleText, viewMode === 'day' && styles.toggleTextActive]}>Day</Text>
+            <Text style={[styles.toggleText, viewMode === 'day' && styles.toggleTextActive]}>{t('attendance.day')}</Text>
           </Pressable>
           <Pressable
             style={[styles.toggleButton, viewMode === 'month' && styles.toggleButtonActive]}
             onPress={() => setViewMode('month')}>
-            <Text style={[styles.toggleText, viewMode === 'month' && styles.toggleTextActive]}>Month</Text>
+            <Text style={[styles.toggleText, viewMode === 'month' && styles.toggleTextActive]}>{t('attendance.month')}</Text>
           </Pressable>
         </View>
 
@@ -370,7 +373,7 @@ const AttendanceScreen = () => {
           <SearchInput
             value={searchQuery}
             onChangeText={setSearchQuery}
-            placeholder="Search classes or instructors..."
+            placeholder={t('common.search')}
           />
         ) : null}
 
@@ -401,7 +404,7 @@ const AttendanceScreen = () => {
                     onPress={() => handleDayPress(key)}
                     accessibilityRole="button">
                     <Text style={[styles.dayPickerDayName, isSelected && styles.dayPickerDayNameSelected]}>
-                      {DAY_NAMES[day.getDay()]}
+                      {t(`common.days_short.${DAY_KEYS[day.getDay()]}` as any)}
                     </Text>
                     <Text style={[styles.dayPickerDate, isSelected && styles.dayPickerDateSelected]}>
                       {day.getDate()}
@@ -422,7 +425,7 @@ const AttendanceScreen = () => {
             {!isViewingCurrentWeek || selectedDateKey !== todayKey ? (
               <Pressable style={styles.todayPill} onPress={handleGoToToday} accessibilityRole="button">
                 <MaterialCommunityIcons name="calendar-today" size={14} color={palette.primary} />
-                <Text style={styles.todayPillText}>Today</Text>
+                <Text style={styles.todayPillText}>{t('attendance.today')}</Text>
               </Pressable>
             ) : null}
           </>
@@ -460,7 +463,7 @@ const AttendanceScreen = () => {
                       {monthDate.getFullYear().toString().slice(-2)}
                     </Text>
                     <Text style={[styles.dayPickerDate, isSelected && styles.dayPickerDateSelected]}>
-                      {MONTH_NAMES[monthDate.getMonth()]}
+                      {t(`common.months_short.${MONTH_KEYS[monthDate.getMonth()]}` as any)}
                     </Text>
                     {isCurrentMonth && !isSelected ? <View style={styles.dayPickerTodayDot} /> : null}
                   </Pressable>
@@ -482,7 +485,7 @@ const AttendanceScreen = () => {
             {currentMonthKey !== `${selectedMonth.getFullYear()}-${selectedMonth.getMonth()}` ? (
               <Pressable style={styles.todayPill} onPress={handleGoToCurrentMonth} accessibilityRole="button">
                 <MaterialCommunityIcons name="calendar-month" size={14} color={palette.primary} />
-                <Text style={styles.todayPillText}>Current Month</Text>
+                <Text style={styles.todayPillText}>{t('attendance.current_month')}</Text>
               </Pressable>
             ) : null}
           </>
@@ -503,13 +506,13 @@ const AttendanceScreen = () => {
             timeline.isLoading ? (
               <View style={styles.loadingState}>
                 <ActivityIndicator color={palette.primary} />
-                <Text style={styles.loadingText}>Loading attendance data…</Text>
+                <Text style={styles.loadingText}>{t('attendance.loading_data')}</Text>
               </View>
             ) : timeline.isError ? (
               <View style={styles.emptyState}>
                 <MaterialCommunityIcons name="alert-circle-outline" size={48} color={palette.error} />
-                <Text style={styles.emptyTitle}>Failed to load attendance</Text>
-                <Text style={styles.emptySubtitle}>Pull down to try again.</Text>
+                <Text style={styles.emptyTitle}>{t('attendance.failed_load')}</Text>
+                <Text style={styles.emptySubtitle}>{t('attendance.pull_to_retry')}</Text>
               </View>
             ) : filteredEntries.length > 0 ? (
               <View style={styles.timelineContainer}>
@@ -527,27 +530,27 @@ const AttendanceScreen = () => {
             ) : searchQuery.trim() ? (
               <View style={styles.emptyState}>
                 <MaterialCommunityIcons name="magnify" size={48} color={palette.onSurfaceMuted} />
-                <Text style={styles.emptyTitle}>No results found</Text>
-                <Text style={styles.emptySubtitle}>Try a different search term.</Text>
+                <Text style={styles.emptyTitle}>{t('attendance.no_results')}</Text>
+                <Text style={styles.emptySubtitle}>{t('attendance.try_different_search')}</Text>
               </View>
             ) : (
               <View style={styles.emptyState}>
                 <MaterialCommunityIcons name="calendar-blank-outline" size={48} color={palette.onSurfaceMuted} />
-                <Text style={styles.emptyTitle}>No classes scheduled</Text>
-                <Text style={styles.emptySubtitle}>There are no classes scheduled for this day.</Text>
+                <Text style={styles.emptyTitle}>{t('attendance.no_classes_scheduled')}</Text>
+                <Text style={styles.emptySubtitle}>{t('attendance.no_classes_day')}</Text>
               </View>
             )
           ) : (
             monthlyData.isLoading ? (
               <View style={styles.loadingState}>
                 <ActivityIndicator color={palette.primary} />
-                <Text style={styles.loadingText}>Loading monthly data…</Text>
+                <Text style={styles.loadingText}>{t('attendance.loading_data')}</Text>
               </View>
             ) : monthlyData.isError ? (
               <View style={styles.emptyState}>
                 <MaterialCommunityIcons name="alert-circle-outline" size={48} color={palette.error} />
-                <Text style={styles.emptyTitle}>Failed to load attendance</Text>
-                <Text style={styles.emptySubtitle}>Pull down to try again.</Text>
+                <Text style={styles.emptyTitle}>{t('attendance.failed_load')}</Text>
+                <Text style={styles.emptySubtitle}>{t('attendance.pull_to_retry')}</Text>
               </View>
             ) : filteredMonthlyEntries.length > 0 ? (
               <View style={styles.monthlyListContainer}>
@@ -562,14 +565,14 @@ const AttendanceScreen = () => {
             ) : searchQuery.trim() ? (
               <View style={styles.emptyState}>
                 <MaterialCommunityIcons name="magnify" size={48} color={palette.onSurfaceMuted} />
-                <Text style={styles.emptyTitle}>No results found</Text>
-                <Text style={styles.emptySubtitle}>Try a different search term.</Text>
+                <Text style={styles.emptyTitle}>{t('attendance.no_results')}</Text>
+                <Text style={styles.emptySubtitle}>{t('attendance.try_different_search')}</Text>
               </View>
             ) : (
               <View style={styles.emptyState}>
                 <MaterialCommunityIcons name="calendar-blank-outline" size={48} color={palette.onSurfaceMuted} />
-                <Text style={styles.emptyTitle}>No classes found</Text>
-                <Text style={styles.emptySubtitle}>You do not have any active classes.</Text>
+                <Text style={styles.emptyTitle}>{t('classes.empty_title')}</Text>
+                <Text style={styles.emptySubtitle}>{t('attendance.no_classes_active')}</Text>
               </View>
             )
           )}
@@ -593,6 +596,7 @@ const AttendanceScreen = () => {
         visible={Boolean(rosterDialogClassId)}
         summary={monthlyData.entries.find((e) => e.classId === rosterDialogClassId) ?? null}
         searchQuery={rosterSearchQuery}
+        selectedMonth={selectedMonth}
         onSearchChange={setRosterSearchQuery}
         onClose={() => setRosterDialogClassId(null)}
       />
@@ -658,21 +662,23 @@ const ReportClassPickerModal = ({
   onShareReport,
   onClose,
 }: ReportClassPickerModalProps) => {
+  const { t } = useTranslation();
+
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <Pressable style={reportStyles.overlay} onPress={onClose}>
         <View style={reportStyles.sheet} onStartShouldSetResponder={() => true}>
           <View style={reportStyles.header}>
-            <Text style={reportStyles.title}>Include Classes</Text>
-            <Text style={reportStyles.subtitle}>{selectedClassIds.length} selected</Text>
+            <Text style={reportStyles.title}>{t('attendance.include_classes')}</Text>
+            <Text style={reportStyles.subtitle}>{selectedClassIds.length} {t(selectedClassIds.length === 1 ? 'common.selected_class_singular' : 'common.selected_class_plural')}</Text>
           </View>
 
           <View style={reportStyles.actionsRow}>
             <Pressable onPress={onSelectAll} accessibilityRole="button">
-              <Text style={reportStyles.actionText}>Select all</Text>
+              <Text style={reportStyles.actionText}>{t('attendance.select_all')}</Text>
             </Pressable>
             <Pressable onPress={onClear} accessibilityRole="button">
-              <Text style={reportStyles.actionText}>Clear</Text>
+              <Text style={reportStyles.actionText}>{t('attendance.clear')}</Text>
             </Pressable>
           </View>
 
@@ -712,7 +718,7 @@ const ReportClassPickerModal = ({
               accessibilityRole="button">
               <View style={reportStyles.actionButtonContent}>
                 <MaterialCommunityIcons name="download" size={18} color={palette.primary} />
-                <Text style={reportStyles.actionButtonText}>Download</Text>
+                <Text style={reportStyles.actionButtonText}>{t('attendance.download')}</Text>
               </View>
             </Pressable>
 
@@ -727,7 +733,7 @@ const ReportClassPickerModal = ({
               accessibilityRole="button">
               <View style={reportStyles.actionButtonContent}>
                 <MaterialCommunityIcons name="share-variant-outline" size={18} color={palette.onPrimary} />
-                <Text style={reportStyles.actionButtonTextPrimary}>Share</Text>
+                <Text style={reportStyles.actionButtonTextPrimary}>{t('attendance.share')}</Text>
               </View>
             </Pressable>
           </View>
@@ -748,9 +754,11 @@ const CalendarModal = ({
   onChangeMonth,
   onClose,
 }: CalendarModalProps) => {
+  const { t, i18n } = useTranslation();
+
   const monthLabel = useMemo(() => {
-    return new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(month);
-  }, [month]);
+    return new Intl.DateTimeFormat(i18n.language || 'en-US', { month: 'long', year: 'numeric' }).format(month);
+  }, [month, i18n.language]);
 
   const calendarDays = useMemo(() => {
     const year = month.getFullYear();
@@ -758,17 +766,15 @@ const CalendarModal = ({
     const firstDay = new Date(year, m, 1);
     const lastDay = new Date(year, m + 1, 0);
     const startPad = firstDay.getDay();
-    const days: (Date | null)[] = [];
 
-    for (let i = 0; i < startPad; i++) {
-      days.push(null);
+    const days: (Date | null)[] = Array(startPad).fill(null);
+    for (let i = 1; i <= lastDay.getDate(); i++) {
+      days.push(new Date(year, m, i));
     }
-    for (let d = 1; d <= lastDay.getDate(); d++) {
-      days.push(new Date(year, m, d));
-    }
-
     return days;
   }, [month]);
+
+  if (!visible) return null;
 
   const handlePrevMonth = () => {
     const prev = new Date(month.getFullYear(), month.getMonth() - 1, 1);
@@ -831,7 +837,7 @@ const CalendarModal = ({
           </View>
 
           <Pressable style={calStyles.todayButton} onPress={() => onSelectDate(todayKey)}>
-            <Text style={calStyles.todayButtonText}>Go to Today</Text>
+            <Text style={calStyles.todayButtonText}>{t('attendance.go_to_today')}</Text>
           </Pressable>
         </View>
       </Pressable>
@@ -1269,8 +1275,8 @@ const styles = StyleSheet.create({
 
 export default AttendanceScreen;
 
-const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as const;
-const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] as const;
+const DAY_KEYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'] as const;
+const MONTH_KEYS = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'] as const;
 
 const getWeekStart = (date: Date) => {
   const d = new Date(date);

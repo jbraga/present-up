@@ -3,6 +3,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import { memo, useCallback, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Alert, FlatList, Pressable, RefreshControl, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -10,6 +11,7 @@ import { studentQueryKeys } from '@features/students/api/queryKeys';
 import { useStudentList } from '@features/students/hooks/useStudentList';
 import { useStudentService } from '@features/students/hooks/useStudentService';
 import { StudentEntity } from '@features/students/types/student';
+import { ConfirmationDialog } from '@shared/components/ConfirmationDialog';
 import { ScreenHeader } from '@shared/components/ScreenHeader';
 import { SearchInput } from '@shared/components/SearchInput';
 import { SelectionToolbar } from '@shared/components/SelectionToolbar';
@@ -84,8 +86,10 @@ StudentCard.displayName = 'StudentCard';
 
 const StudentsScreen = () => {
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
   const [query, setQuery] = useState('');
   const [selectedStudentIds, setSelectedStudentIds] = useState<Set<string>>(new Set());
+  const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const hasScrolled = useRef(false);
   const flatListRef = useRef<FlatList>(null);
 
@@ -108,7 +112,7 @@ const StudentsScreen = () => {
       }
       setSelectedStudentIds(newSelection);
     } else {
-      router.push(`/students/${student.id}`);
+      router.push({ pathname: '/(tabs)/students/[studentId]', params: { studentId: student.id } });
     }
   }, [selectedStudentIds]);
 
@@ -122,28 +126,19 @@ const StudentsScreen = () => {
     setSelectedStudentIds(new Set());
   }, []);
 
-  const handleDeleteSelected = useCallback(async () => {
-    const count = selectedStudentIds.size;
-    Alert.alert(
-      'Delete students',
-      `Are you sure you want to delete ${count} student${count > 1 ? 's' : ''}? This action cannot be undone.`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await deleteStudentsMutation.mutateAsync(Array.from(selectedStudentIds));
-              setSelectedStudentIds(new Set());
-            } catch {
-              Alert.alert('Error', 'Unable to delete students. Please try again.');
-            }
-          },
-        },
-      ]
-    );
-  }, [selectedStudentIds, deleteStudentsMutation]);
+  const handleDeleteSelected = useCallback(() => {
+    setDeleteDialogOpen(true);
+  }, []);
+
+  const handleConfirmDeleteSelected = useCallback(async () => {
+    try {
+      await deleteStudentsMutation.mutateAsync(Array.from(selectedStudentIds));
+      setSelectedStudentIds(new Set());
+      setDeleteDialogOpen(false);
+    } catch {
+      Alert.alert(t('common.error'), t('common.error'));
+    }
+  }, [selectedStudentIds, deleteStudentsMutation, t]);
 
   const handleEditSelected = useCallback(() => {
     if (selectedStudentIds.size !== 1) return;
@@ -162,9 +157,9 @@ const StudentsScreen = () => {
     
     if (currentCount >= MAX_STUDENTS_LOADED) {
       Alert.alert(
-        'Limit reached',
-        'Please use the search to find specific students.',
-        [{ text: 'Got it' }]
+        t('common.error'),
+        t('common.search'),
+        [{ text: t('common.done') }]
       );
       return;
     }
@@ -172,7 +167,7 @@ const StudentsScreen = () => {
     if (hasScrolled.current && studentListQuery.hasNextPage && !studentListQuery.isFetchingNextPage) {
       studentListQuery.fetchNextPage();
     }
-  }, [studentListQuery, data.length]);
+  }, [studentListQuery, data.length, t]);
 
   const handleScroll = useCallback(() => {
     hasScrolled.current = true;
@@ -216,25 +211,35 @@ const StudentsScreen = () => {
       {selectedStudentIds.size > 0 ? (
         <SelectionToolbar
           count={selectedStudentIds.size}
-          itemLabel="student"
+          itemType="student"
           onClose={handleClearSelection}
           onDelete={handleDeleteSelected}
           onEdit={handleEditSelected}
         />
       ) : null}
+      <ConfirmationDialog
+        visible={isDeleteDialogOpen}
+        title={t('common.delete')}
+        message={t('students.delete_confirm')}
+        confirmLabel={t('common.delete')}
+        cancelLabel={t('common.cancel')}
+        onConfirm={handleConfirmDeleteSelected}
+        onCancel={() => setDeleteDialogOpen(false)}
+        isConfirming={deleteStudentsMutation.isPending}
+      />
       <View style={styles.container}>
         {selectedStudentIds.size === 0 ? (
-          <ScreenHeader title="Students" />
+          <ScreenHeader title={t('students.title')} titleIcon="account-multiple-outline" />
         ) : null}
         <SearchInput
           value={query}
           onChangeText={setQuery}
-          placeholder="Search students..."
+          placeholder={t('common.search')}
         />
         {studentListQuery.isFetching && data.length === 0 ? (
           <View style={styles.loadingState}>
             <ActivityIndicator color={palette.primary} />
-            <Text style={styles.loadingText}>Searching students…</Text>
+            <Text style={styles.loadingText}>{t('common.loading')}</Text>
           </View>
         ) : (
           <FlatList
@@ -272,8 +277,8 @@ const StudentsScreen = () => {
             }
             ListEmptyComponent={() => (
               <View style={styles.emptyState}>
-                <Text style={styles.emptyTitle}>No students found</Text>
-                <Text style={styles.emptySubtitle}>Try a different search or add a new student.</Text>
+                <Text style={styles.emptyTitle}>{t('students.empty')}</Text>
+                <Text style={styles.emptySubtitle}>{t('common.search')}</Text>
               </View>
             )}
           />
@@ -283,7 +288,7 @@ const StudentsScreen = () => {
       {selectedStudentIds.size === 0 ? (
         <Pressable
           style={styles.fab}
-          onPress={() => router.push('/(tabs)/students/create')}
+          onPress={() => router.push({ pathname: '/(tabs)/students/create' })}
           accessibilityRole="button"
           accessibilityLabel="Add student"
           accessibilityHint="Opens the form to add a new student"

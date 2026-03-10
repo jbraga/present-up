@@ -1,5 +1,6 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { memo, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { AttendanceSummary } from '@features/attendance/types/attendance';
@@ -33,6 +34,7 @@ const isAtRisk = (summary: AttendanceSummary | null, threshold: number): boolean
 
 export const ClassStudentAttendanceRow = memo(
   ({ student, summary, minAttendancePercentage, onRecordAttendance, isSelected, selectionMode, onPress, onLongPress }: ClassStudentAttendanceRowProps) => {
+    const { t } = useTranslation();
     const atRisk = useMemo(() => isAtRisk(summary, minAttendancePercentage), [summary, minAttendancePercentage]);
     const initials = useMemo(() => getInitials(student), [student]);
     const attended = summary?.sessionsAttended ?? 0;
@@ -81,14 +83,14 @@ export const ClassStudentAttendanceRow = memo(
             )}
             <View style={styles.nameGroup}>
               <Text style={styles.name} numberOfLines={1}>
-                {student ? `${student.firstName} ${student.lastName}` : 'Unknown student'}
+                {student ? `${student.firstName} ${student.lastName}` : t('students.unknown')}
               </Text>
               {hasData ? (
                 <Text style={[styles.statusText, atRisk && styles.statusTextAtRisk]}>
-                  {atRisk ? 'Below threshold' : 'Good standing'}
+                  {atRisk ? t('attendance.statuses.below_threshold') : t('attendance.statuses.good_standing')}
                 </Text>
               ) : (
-                <Text style={styles.statusText}>No sessions yet</Text>
+                <Text style={styles.statusText}>{t('attendance.empty_title', 'No attendance data yet')}</Text>
               )}
             </View>
           </View>
@@ -114,21 +116,21 @@ export const ClassStudentAttendanceRow = memo(
             <View style={styles.metricsRow}>
               <View style={styles.metric}>
                 <MaterialCommunityIcons name="check-circle-outline" size={14} color={palette.primary} />
-                <Text style={styles.metricText}>{attended} present</Text>
+                <Text style={styles.metricText}>{attended} {t('report.present').toLowerCase()}</Text>
               </View>
               {missed > 0 ? (
                 <View style={styles.metric}>
                   <MaterialCommunityIcons name="close-circle-outline" size={14} color={palette.error} />
-                  <Text style={styles.metricText}>{missed} missed</Text>
+                  <Text style={styles.metricText}>{missed} {t('report.absent').toLowerCase()}</Text>
                 </View>
               ) : null}
               {excused > 0 ? (
                 <View style={styles.metric}>
                   <MaterialCommunityIcons name="information-outline" size={14} color={palette.onSurfaceMuted} />
-                  <Text style={styles.metricText}>{excused} excused</Text>
+                  <Text style={styles.metricText}>{excused} {t('attendance.mark_excused').toLowerCase()}</Text>
                 </View>
               ) : null}
-              <Text style={styles.metricTotal}>{total} total</Text>
+              <Text style={styles.metricTotal}>{total} {t('report.sessions').toLowerCase()}</Text>
             </View>
           </>
         ) : null}

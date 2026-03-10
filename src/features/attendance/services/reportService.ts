@@ -1,6 +1,7 @@
 import { ATTENDANCE_STATUS } from '@core/constants/attendance';
 import { MonthlyClassSummary } from '@features/attendance/hooks/useMonthlyAttendance';
 import { StudentEntity } from '@features/students/types/student';
+import i18n from '@shared/localization/i18n';
 import { formatPercentage } from '@shared/utils/formatPercentage';
 
 type BuildMonthlyReportInput = {
@@ -18,15 +19,17 @@ const escapeHtml = (value: string) => {
     .replaceAll("'", '&#39;');
 };
 
+const getActiveLocale = () => i18n.language || 'en-US';
+
 const formatMonthLabel = (date: Date) => {
-  return new Intl.DateTimeFormat('en-US', {
+  return new Intl.DateTimeFormat(getActiveLocale(), {
     month: 'long',
     year: 'numeric',
   }).format(date);
 };
 
 const formatDayLabel = (date: Date) => {
-  return new Intl.DateTimeFormat('en-US', {
+  return new Intl.DateTimeFormat(getActiveLocale(), {
     weekday: 'short',
     month: 'short',
     day: '2-digit',
@@ -46,8 +49,7 @@ const studentDisplayName = (student: StudentEntity | undefined) => {
     return 'Unknown student';
   }
 
-  const firstName = student.preferredName?.trim() || student.firstName;
-  return `${firstName} ${student.lastName}`.trim();
+  return `${student.firstName} ${student.lastName}`.trim();
 };
 
 const statusLabel = (status: string) => {
@@ -124,20 +126,21 @@ export const buildMonthlyReportHtml = ({
       return `
         <section class="class-section">
           <h3>${escapeHtml(entry.className)}</h3>
-          <p class="muted">Instructor: ${escapeHtml(entry.instructorName || '-')} | Sessions: ${entry.totalSessionsRecorded} | Attendance: ${formatPercentage(entry.attendanceRate)}</p>
+          <p class="muted">${i18n.t('classes.instructor')}: ${escapeHtml(entry.instructorName || '-')} | ${i18n.t('report.enrolled')}: ${entry.totalEnrolled} | ${i18n.t('report.average_attendance')}: ${formatPercentage(entry.attendanceRate)}</p>
+          <h4>${i18n.t('report.student_details')}</h4>
           <table>
             <thead>
               <tr>
-                <th>Student</th>
-                <th>Present</th>
-                <th>Absent</th>
-                <th>Excused</th>
-                <th>Sessions</th>
-                <th>Attendance</th>
+                <th>${i18n.t('report.student')}</th>
+                <th>${i18n.t('report.present')}</th>
+                <th>${i18n.t('report.absent')}</th>
+                <th>${i18n.t('attendance.mark_excused')}</th>
+                <th>${i18n.t('report.sessions')}</th>
+                <th>${i18n.t('report.attendance_rate')}</th>
               </tr>
             </thead>
             <tbody>
-              ${studentRows || '<tr><td colspan="6">No student data for this class in this month.</td></tr>'}
+              ${studentRows || `<tr><td colspan="6" class="muted">${i18n.t('students.empty')}</td></tr>`}
             </tbody>
           </table>
         </section>

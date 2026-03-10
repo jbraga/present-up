@@ -1,14 +1,7 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useMemo, useState } from 'react';
-import {
-  ActivityIndicator,
-  FlatList,
-  ListRenderItemInfo,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { useTranslation } from 'react-i18next';
+import { ActivityIndicator, FlatList, ListRenderItemInfo, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { useStudentSearch } from '@features/students/hooks/useStudentSearch';
 import { StudentEntity } from '@features/students/types/student';
@@ -33,6 +26,7 @@ export const AddStudentToClassDialog = ({
   enrolledStudentIds,
   isLoading,
 }: AddStudentToClassDialogProps) => {
+  const { t } = useTranslation();
   const [query, setQuery] = useState('');
   const [addedStudentIds, setAddedStudentIds] = useState<Set<string>>(new Set());
 
@@ -77,7 +71,7 @@ export const AddStudentToClassDialog = ({
           disabled={isLoading}
           accessibilityRole="button"
           accessibilityLabel={`Add ${fullName}`}>
-          <Text style={styles.addButtonText}>Add</Text>
+          <Text style={styles.addButtonText}>{t('common.add')}</Text>
         </Pressable>
       </View>
     );
@@ -87,7 +81,7 @@ export const AddStudentToClassDialog = ({
     <BottomSheet visible={visible} onClose={handleClose}>
       <View style={styles.header}>
         <View style={styles.headerTitles}>
-          <Text style={styles.eyebrowLabel}>ADD STUDENTS</Text>
+          <Text style={styles.eyebrowLabel}>{t('classes.details.add_student').toUpperCase()}</Text>
           {className ? (
             <Text style={styles.title} numberOfLines={1}>{className}</Text>
           ) : null}
@@ -97,24 +91,24 @@ export const AddStudentToClassDialog = ({
       <SearchInput
         value={query}
         onChangeText={setQuery}
-        placeholder="Search students..."
+        placeholder={t('common.search')}
       />
 
       {searchQuery.isLoading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={palette.primary} />
-          <Text style={styles.loadingText}>Loading students...</Text>
+          <Text style={styles.loadingText}>{t('common.loading')}</Text>
         </View>
       ) : availableStudents.length === 0 ? (
         <View style={styles.emptyContainer}>
           <MaterialCommunityIcons name="account-off-outline" size={64} color={palette.onSurfaceVariant} />
           <Text style={styles.emptyTitle}>
-            {query ? 'No students found' : 'No students available'}
+            {query ? t('students.empty') : t('students.empty_search')}
           </Text>
           <Text style={styles.emptySubtitle}>
             {query
-              ? 'Try a different search term'
-              : 'All students are already enrolled in this class'}
+              ? t('students.empty_search')
+              : t('classes.details.empty_title')}
           </Text>
         </View>
       ) : (

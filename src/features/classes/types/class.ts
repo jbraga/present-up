@@ -31,7 +31,6 @@ export const classSchema = z.object({
   capacity: z.number().int().positive().nullable().default(null),
   location: z.string().optional().default(''),
   iconName: z.string().optional().default(''),
-  imageUri: z.string().optional().default(''),
   createdAt: z.coerce.date(),
   updatedAt: z.coerce.date().optional(),
 });
@@ -53,7 +52,6 @@ export const createClassInputSchema = z.object({
     .max(1, 'Attendance threshold cannot exceed 100%'),
   location: z.string().trim().optional().default(''),
   iconName: z.string().optional().default(''),
-  imageUri: z.string().optional().default(''),
 });
 
 export type CreateClassInput = z.infer<typeof createClassInputSchema>;

@@ -8,6 +8,11 @@ type Migration = {
   up: (db: SQLiteDatabase) => Promise<void>;
 };
 
+async function hasColumn(db: SQLiteDatabase, tableName: string, columnName: string): Promise<boolean> {
+  const columns = await db.getAllAsync<{ name: string }>(`PRAGMA table_info(${tableName})`);
+  return columns.some((column) => column.name === columnName);
+}
+
 const migrations: Migration[] = [
   {
     version: 1,
@@ -24,7 +29,6 @@ const migrations: Migration[] = [
           capacity INTEGER,
           location TEXT NOT NULL DEFAULT '',
           icon_name TEXT NOT NULL DEFAULT '',
-          image_uri TEXT NOT NULL DEFAULT '',
           created_at TEXT NOT NULL,
           updated_at TEXT
         );
@@ -35,7 +39,6 @@ const migrations: Migration[] = [
           id TEXT PRIMARY KEY NOT NULL,
           first_name TEXT NOT NULL,
           last_name TEXT NOT NULL,
-          preferred_name TEXT,
           email TEXT,
           guardian_email TEXT,
           phone_number TEXT,
@@ -48,7 +51,6 @@ const migrations: Migration[] = [
         CREATE TABLE IF NOT EXISTS class_roster (
           class_id TEXT NOT NULL REFERENCES classes(id) ON DELETE CASCADE,
           student_id TEXT NOT NULL REFERENCES students(id) ON DELETE CASCADE,
-          assigned_at TEXT,
           PRIMARY KEY (class_id, student_id)
         );
 
@@ -116,6 +118,23 @@ const migrations: Migration[] = [
         CREATE INDEX IF NOT EXISTS idx_attendance_class_date ON attendance_logs(class_id, date);
         CREATE INDEX IF NOT EXISTS idx_attendance_student ON attendance_logs(student_id);
       `);
+    },
+  },
+  {
+    version: 3,
+    name: 'drop_unused_columns',
+    up: async (db) => {
+      if (await hasColumn(db, 'students', 'preferred_name')) {
+        await db.execAsync('ALTER TABLE students DROP COLUMN preferred_name;');
+      }
+
+      if (await hasColumn(db, 'classes', 'image_uri')) {
+        await db.execAsync('ALTER TABLE classes DROP COLUMN image_uri;');
+      }
+
+      if (await hasColumn(db, 'class_roster', 'assigned_at')) {
+        await db.execAsync('ALTER TABLE class_roster DROP COLUMN assigned_at;');
+      }
     },
   },
 ];

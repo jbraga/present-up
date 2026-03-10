@@ -1,8 +1,11 @@
 import { Stack } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 
 import { palette } from '@theme/tokens';
 
 export default function StudentsStack() {
+  const { t } = useTranslation();
+
   return (
     <Stack
       screenOptions={{
@@ -16,8 +19,9 @@ export default function StudentsStack() {
         headerShadowVisible: false,
       }}>
       <Stack.Screen name="index" options={{ headerShown: false }} />
-      <Stack.Screen name="create" options={{ title: 'Add Student' }} />
-      <Stack.Screen name="edit" options={{ title: 'Edit Student' }} />
+      <Stack.Screen name="[studentId]" options={{ title: t('navigation.student_singular') }} />
+      <Stack.Screen name="create" options={{ title: t('students.add_new') }} />
+      <Stack.Screen name="edit" options={{ title: t('students.edit_student') }} />
     </Stack>
   );
 }
