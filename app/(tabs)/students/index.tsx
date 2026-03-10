@@ -2,12 +2,13 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
-import { memo, useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, FlatList, Pressable, RefreshControl, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { studentQueryKeys } from '@features/students/api/queryKeys';
+import { StudentList } from '@features/students/components/StudentList';
 import { useStudentList } from '@features/students/hooks/useStudentList';
 import { useStudentService } from '@features/students/hooks/useStudentService';
 import { StudentEntity } from '@features/students/types/student';
@@ -16,74 +17,9 @@ import { ScreenHeader } from '@shared/components/ScreenHeader';
 import { SearchInput } from '@shared/components/SearchInput';
 import { SelectionToolbar } from '@shared/components/SelectionToolbar';
 import { useToast } from '@shared/components/ToastProvider';
-import { palette, shape, spacing, typography } from '@theme/tokens';
-
+import { palette, spacing, typography } from '@theme/tokens';
 
 const MAX_STUDENTS_LOADED = 1000;
-const STUDENT_ITEM_HEIGHT = 88;
-
-type StudentCardProps = {
-  item: StudentEntity;
-  isSelected: boolean;
-  selectionMode: boolean;
-  onPress: (student: StudentEntity) => void;
-  onLongPress: (student: StudentEntity) => void;
-};
-
-const StudentCard = memo(({ item, isSelected, selectionMode, onPress, onLongPress }: StudentCardProps) => {
-  const fullName = item.firstName + ' ' + item.lastName;
-  const initials = (item.firstName[0] + item.lastName[0]).toUpperCase();
-  
-  return (
-    <Pressable
-      style={[styles.studentCard, isSelected && styles.studentCardSelected]}
-      onPress={() => onPress(item)}
-      onLongPress={() => onLongPress(item)}
-      android_ripple={{ color: palette.primaryContainer }}>
-      <View style={styles.studentRow}>
-        {isSelected ? (
-          <View style={styles.avatarSelected}>
-            <MaterialCommunityIcons name="check" size={22} color={palette.onPrimary} />
-          </View>
-        ) : (
-          <View style={styles.avatar}>
-            <Text style={styles.avatarText}>{initials}</Text>
-          </View>
-        )}
-        <View style={styles.studentInfo}>
-          <Text style={styles.studentName}>{fullName}</Text>
-          <View style={styles.metaRows}>
-            {item.email ? (
-              <View style={styles.metaRow}>
-                <MaterialCommunityIcons name="email-outline" size={12} color={palette.onSurfaceMuted} />
-                <Text style={styles.studentMeta} numberOfLines={1}>{item.email}</Text>
-              </View>
-            ) : null}
-            {item.guardianEmail ? (
-              <View style={styles.metaRow}>
-                <MaterialCommunityIcons name="account-child-outline" size={12} color={palette.onSurfaceMuted} />
-                <Text style={styles.studentMeta} numberOfLines={1}>{item.guardianEmail}</Text>
-              </View>
-            ) : null}
-            {item.phoneNumber ? (
-              <View style={styles.metaRow}>
-                <MaterialCommunityIcons name="phone-outline" size={12} color={palette.onSurfaceMuted} />
-                <Text style={styles.studentMeta} numberOfLines={1}>{item.phoneNumber}</Text>
-              </View>
-            ) : null}
-          </View>
-        </View>
-        {!selectionMode ? (
-          <View style={styles.chevronContainer}>
-            <MaterialCommunityIcons name="chevron-right" size={20} color={palette.onSurfaceMuted} />
-          </View>
-        ) : null}
-      </View>
-    </Pressable>
-  );
-});
-
-StudentCard.displayName = 'StudentCard';
 
 const StudentsScreen = () => {
   const queryClient = useQueryClient();
@@ -184,19 +120,6 @@ const StudentsScreen = () => {
     await studentListQuery.refetch();
   }, [studentListQuery]);
 
-  const renderItem = useCallback(
-    ({ item }: { item: StudentEntity }) => (
-      <StudentCard
-        item={item}
-        isSelected={selectedStudentIds.has(item.id)}
-        selectionMode={selectedStudentIds.size > 0}
-        onPress={handleStudentPress}
-        onLongPress={handleStudentLongPress}
-      />
-    ),
-    [selectedStudentIds, handleStudentPress, handleStudentLongPress]
-  );
-
   useFocusEffect(
     useCallback(() => {
       hasScrolled.current = false;
@@ -248,45 +171,19 @@ const StudentsScreen = () => {
             <Text style={styles.loadingText}>{t('common.loading')}</Text>
           </View>
         ) : (
-          <FlatList
-            ref={flatListRef}
+          <StudentList
             data={data}
-            keyExtractor={(item) => item.id}
-            renderItem={renderItem}
-            contentContainerStyle={styles.studentList}
-            onScroll={handleScroll}
+            isRefreshing={studentListQuery.isRefetching && !studentListQuery.isFetchingNextPage}
+            isFetchingNextPage={studentListQuery.isFetchingNextPage}
+            onRefresh={handleRefresh}
             onEndReached={handleLoadMore}
-            onEndReachedThreshold={0.8}
-            windowSize={5}
-            maxToRenderPerBatch={10}
-            initialNumToRender={10}
-            removeClippedSubviews={true}
-            refreshControl={
-              <RefreshControl
-                refreshing={studentListQuery.isRefetching && !studentListQuery.isFetchingNextPage}
-                onRefresh={handleRefresh}
-                colors={[palette.primary]}
-                tintColor={palette.primary}
-              />
-            }
-            getItemLayout={(data, index) => ({
-              length: STUDENT_ITEM_HEIGHT,
-              offset: STUDENT_ITEM_HEIGHT * index,
-              index,
-            })}
-            ListFooterComponent={
-              studentListQuery.isFetchingNextPage ? (
-                <View style={styles.footerLoading}>
-                  <ActivityIndicator color={palette.primary} />
-                </View>
-              ) : null
-            }
-            ListEmptyComponent={() => (
-              <View style={styles.emptyState}>
-                <Text style={styles.emptyTitle}>{t('students.empty')}</Text>
-                <Text style={styles.emptySubtitle}>{t('common.search')}</Text>
-              </View>
-            )}
+            onScroll={handleScroll}
+            emptyTitle={t('students.empty')}
+            emptySubtitle={t('students.empty_search')}
+            onSelectStudent={handleStudentPress}
+            onLongPressStudent={handleStudentLongPress}
+            selectedStudentIds={selectedStudentIds}
+            listRef={flatListRef}
           />
         )}
       </View>
@@ -333,91 +230,6 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 8 },
     shadowRadius: 20,
   },
-  studentList: {
-    gap: spacing.md,
-    paddingBottom: 80,
-  },
-  footerLoading: {
-    paddingVertical: spacing.lg,
-    alignItems: 'center',
-  },
-  studentCard: {
-    borderRadius: shape.large,
-    borderWidth: 1,
-    borderColor: palette.outlineVariant,
-    backgroundColor: palette.surface,
-    padding: spacing.lg,
-    gap: spacing.xs,
-    shadowColor: palette.shadow,
-    shadowOpacity: 0.04,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 8,
-    elevation: 1,
-  },
-  studentCardSelected: {
-    backgroundColor: palette.surface,
-    borderColor: palette.primary,
-    borderWidth: 2,
-    shadowColor: palette.primary,
-    shadowOpacity: 0.08,
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 12,
-    elevation: 3,
-  },
-  studentRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-  },
-  avatar: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: palette.primaryContainer,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  avatarSelected: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: palette.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  avatarText: {
-    ...typography.titleSmall,
-    color: palette.primary,
-    fontFamily: 'Lexend-Bold',
-    fontWeight: '700',
-  },
-  studentInfo: {
-    flex: 1,
-    gap: spacing.xs,
-  },
-  metaRows: {
-    gap: spacing.xs,
-    marginTop: 2,
-  },
-  metaRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-  },
-  chevronContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  studentName: {
-    ...typography.titleMedium,
-    color: palette.onSurface,
-    fontFamily: 'Lexend-SemiBold',
-    fontWeight: '600',
-  },
-  studentMeta: {
-    ...typography.bodySmall,
-    color: palette.onSurfaceVariant,
-  },
   loadingState: {
     flex: 1,
     alignItems: 'center',
@@ -427,20 +239,6 @@ const styles = StyleSheet.create({
   loadingText: {
     ...typography.bodyMedium,
     color: palette.onSurfaceVariant,
-  },
-  emptyState: {
-    paddingVertical: spacing.xxl,
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  emptyTitle: {
-    ...typography.titleMedium,
-    color: palette.onSurface,
-  },
-  emptySubtitle: {
-    ...typography.bodyMedium,
-    color: palette.onSurfaceVariant,
-    textAlign: 'center',
   },
 });
 

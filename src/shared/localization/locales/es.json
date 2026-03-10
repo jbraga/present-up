@@ -118,7 +118,12 @@
     "delete_confirm": "¿Estás seguro de que quieres eliminar este estudiante?",
     "max_loaded_title": "Límite alcanzado",
     "max_loaded_message": "Puedes cargar hasta {{count}} estudiantes.",
-    "unknown": "Estudiante desconocido"
+    "unknown": "Estudiante desconocido",
+    "first_name_placeholder": "ej. Juan",
+    "last_name_placeholder": "ej. García",
+    "email_placeholder": "ej. juan@escuela.edu",
+    "guardian_email_placeholder": "ej. padre@ejemplo.com",
+    "phone_placeholder": "ej. (555) 123-4567"
   },
   "attendance": {
     "not_recorded": "No Registrado",
@@ -168,7 +173,9 @@
     },
     "record_dialog": {
       "title": "Registrar Asistencia",
-      "save": "Guardar Asistencia"
+      "save": "Guardar Asistencia",
+      "note_placeholder_absent": "Añade una nota (ej. Perdió el autobús...)",
+      "note_placeholder_excused": "Añade un motivo..."
     },
     "roster_dialog": {
       "subtitle": "Resumen de {{month}}"
@@ -178,7 +185,7 @@
     "attendance_report": "Informe de Asistencia",
     "monthly_attendance_report": "Informe Mensual de Asistencia",
     "app_logo_placeholder": "LOGO APP",
-    "enrolled": "Matriculados",
+    "enrolled": "Matriculado(s)",
     "attendance": "Asistencia",
     "average_attendance": "Asistencia Media",
     "overall_attendance": "Asistencia General",

@@ -78,7 +78,7 @@ export const AttendanceTimelineCard = memo(
               </>
             ) : (
               <Text style={styles.noRecordsText}>
-                {entry.totalEnrolled} {i18n.t('common.enrolled')}
+                {entry.totalEnrolled} {i18n.t('report.enrolled')}
               </Text>
             )}
             {entry.instructorName ? (

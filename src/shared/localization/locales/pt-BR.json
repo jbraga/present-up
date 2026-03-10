@@ -118,7 +118,12 @@
     "delete_confirm": "Tem certeza que deseja excluir este aluno?",
     "max_loaded_title": "Limite atingido",
     "max_loaded_message": "Você pode carregar até {{count}} alunos.",
-    "unknown": "Aluno desconhecido"
+    "unknown": "Aluno desconhecido",
+    "first_name_placeholder": "ex. João",
+    "last_name_placeholder": "ex. Silva",
+    "email_placeholder": "ex. joao@escola.edu",
+    "guardian_email_placeholder": "ex. responsavel@exemplo.com",
+    "phone_placeholder": "ex. (11) 91234-5678"
   },
   "attendance": {
     "not_recorded": "Não Registrado",
@@ -168,7 +173,9 @@
     },
     "record_dialog": {
       "title": "Registrar Chamada",
-      "save": "Salvar Chamada"
+      "save": "Salvar Chamada",
+      "note_placeholder_absent": "Adicione uma nota (ex.: Perdeu o ônibus...)",
+      "note_placeholder_excused": "Adicione um motivo..."
     },
     "roster_dialog": {
       "subtitle": "Resumo de {{month}}"
@@ -178,7 +185,7 @@
     "attendance_report": "Relatório de Chamada",
     "monthly_attendance_report": "Relatório Mensal de Chamada",
     "app_logo_placeholder": "LOGO APP",
-    "enrolled": "Matriculados",
+    "enrolled": "Matriculado(s)",
     "attendance": "Presença",
     "average_attendance": "Média de Presença",
     "overall_attendance": "Presença Geral",

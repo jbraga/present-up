@@ -307,7 +307,11 @@ export const RecordAttendanceDialog = ({
               isAbsent && styles.notesInputAbsent,
               isExcused && styles.notesInputExcused,
             ]}
-            placeholder={isAbsent ? 'Add a note (e.g. Missed bus...)' : 'Add a reason...'}
+            placeholder={
+              isAbsent
+                ? t('attendance.record_dialog.note_placeholder_absent')
+                : t('attendance.record_dialog.note_placeholder_excused')
+            }
             placeholderTextColor={palette.onSurfaceVariant}
             value={state.notes}
             onChangeText={(text) => handleNotesChange(item.id, text)}

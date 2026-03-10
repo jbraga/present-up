@@ -119,7 +119,12 @@
     "delete_confirm": "Are you sure you want to delete this student?",
     "max_loaded_title": "Limit reached",
     "max_loaded_message": "You can load up to {{count}} students.",
-    "unknown": "Unknown student"
+    "unknown": "Unknown student",
+    "first_name_placeholder": "e.g. John",
+    "last_name_placeholder": "e.g. Smith",
+    "email_placeholder": "e.g. john@school.edu",
+    "guardian_email_placeholder": "e.g. parent@example.com",
+    "phone_placeholder": "e.g. (555) 123-4567"
   },
   "attendance": {
     "not_recorded": "Not Recorded",
@@ -169,7 +174,9 @@
     },
     "record_dialog": {
       "title": "Record Attendance",
-      "save": "Save Attendance"
+      "save": "Save Attendance",
+      "note_placeholder_absent": "Add a note (e.g. Missed bus...)",
+      "note_placeholder_excused": "Add a reason..."
     },
     "roster_dialog": {
       "subtitle": "{{month}} Summary"

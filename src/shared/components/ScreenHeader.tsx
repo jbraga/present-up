@@ -67,6 +67,7 @@ export const ScreenHeader = ({
 const styles = StyleSheet.create({
   container: {
     gap: spacing.xs,
+    marginTop: -spacing.md,
   },
   row: {
     flexDirection: 'row',

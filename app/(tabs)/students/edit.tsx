@@ -1,23 +1,13 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  ActivityIndicator,
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { StudentForm, StudentFormSubmitPayload } from '@features/students/components/StudentForm';
 import { useStudentList } from '@features/students/hooks/useStudentList';
 import { useUpsertStudent } from '@features/students/hooks/useUpsertStudent';
 import { ConfirmationDialog } from '@shared/components/ConfirmationDialog';
-import { FormIconHeader } from '@shared/components/FormIconHeader';
-import { FormInput } from '@shared/components/FormInput';
 import { palette, spacing, typography } from '@theme/tokens';
 
 const EditStudentScreen = () => {
@@ -34,59 +24,36 @@ const EditStudentScreen = () => {
     return allStudents.find((s) => s.id === studentId) ?? null;
   }, [studentListQuery.data, studentId]);
 
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [email, setEmail] = useState('');
-  const [guardianEmail, setGuardianEmail] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [isInitialized, setIsInitialized] = useState(false);
   const [isCancelDialogOpen, setCancelDialogOpen] = useState(false);
+  const [isDirty, setIsDirty] = useState(false);
 
-  useEffect(() => {
-    if (studentData && !isInitialized) {
-      setFirstName(studentData.firstName);
-      setLastName(studentData.lastName);
-      setEmail(studentData.email || '');
-      setGuardianEmail(studentData.guardianEmail || '');
-      setPhoneNumber(studentData.phoneNumber || '');
-      setIsInitialized(true);
+  const initialValues = useMemo(() => {
+    if (!studentData) {
+      return {
+        firstName: '',
+        lastName: '',
+        email: '',
+        guardianEmail: '',
+        phoneNumber: '',
+      };
     }
-  }, [studentData, isInitialized]);
 
-  const isSubmitDisabled = !firstName.trim() || !lastName.trim() || isSubmitting;
+    return {
+      firstName: studentData.firstName,
+      lastName: studentData.lastName,
+      email: studentData.email || '',
+      guardianEmail: studentData.guardianEmail || '',
+      phoneNumber: studentData.phoneNumber || '',
+    };
+  }, [studentData]);
 
-  const handleSubmit = async () => {
-    if (isSubmitDisabled || !studentId) {
+  const handleCancel = () => {
+    if (upsertStudentMutation.isPending) {
       return;
     }
 
-    setIsSubmitting(true);
-    setError(null);
-
-    try {
-      await upsertStudentMutation.mutateAsync({
-        id: studentId,
-        firstName: firstName.trim(),
-        lastName: lastName.trim(),
-        email: email.trim() || undefined,
-        guardianEmail: guardianEmail.trim() || undefined,
-        phoneNumber: phoneNumber.trim() || undefined,
-      });
-
+    if (!isDirty) {
       router.back();
-    } catch (submissionError) {
-      const message =
-        submissionError instanceof Error ? submissionError.message : 'Unable to update student.';
-      setError(message);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleCancel = () => {
-    if (isSubmitting) {
       return;
     }
 
@@ -95,10 +62,21 @@ const EditStudentScreen = () => {
 
   const handleConfirmCancel = () => {
     setCancelDialogOpen(false);
-    router.replace({ pathname: '/(tabs)/students' });
+    router.back();
   };
 
-  const behavior = Platform.OS === 'ios' ? 'padding' : undefined;
+  const handleSubmit = async (payload: StudentFormSubmitPayload) => {
+    if (!studentId) {
+      return;
+    }
+
+    await upsertStudentMutation.mutateAsync({
+      id: studentId,
+      ...payload,
+    });
+
+    router.back();
+  };
 
   if (studentListQuery.isLoading || !studentData) {
     return (
@@ -139,86 +117,16 @@ const EditStudentScreen = () => {
         onConfirm={handleConfirmCancel}
         onCancel={() => setCancelDialogOpen(false)}
       />
-      <KeyboardAvoidingView behavior={behavior} style={styles.screen}>
-        <ScrollView
-          style={styles.scroll}
-          contentContainerStyle={styles.content}
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled">
 
-          <FormIconHeader
-            icon="account-edit-outline"
-            description={t('students.edit_student')}
-          />
-
-          <FormInput
-            label={t('students.first_name')}
-            icon="account-outline"
-            value={firstName}
-            onChangeText={setFirstName}
-            placeholder="e.g. John"
-            autoCapitalize="words"
-            autoCorrect
-            returnKeyType="next"
-          />
-
-          <FormInput
-            label={t('students.last_name')}
-            icon="account-outline"
-            value={lastName}
-            onChangeText={setLastName}
-            placeholder="e.g. Smith"
-            autoCapitalize="words"
-            autoCorrect
-            returnKeyType="next"
-          />
-
-          <FormInput
-            label={t('students.email')}
-            icon="email-outline"
-            value={email}
-            onChangeText={setEmail}
-            placeholder="e.g. john@school.edu"
-            keyboardType="email-address"
-            autoCapitalize="none"
-            returnKeyType="next"
-          />
-
-          <FormInput
-            label={t('students.guardian_email')}
-            icon="account-child-outline"
-            value={guardianEmail}
-            onChangeText={setGuardianEmail}
-            placeholder="e.g. parent@example.com"
-            keyboardType="email-address"
-            autoCapitalize="none"
-            autoCorrect={false}
-            returnKeyType="next"
-          />
-
-          <FormInput
-            label={t('students.phone')}
-            icon="phone-outline"
-            value={phoneNumber}
-            onChangeText={setPhoneNumber}
-            placeholder="e.g. (555) 123-4567"
-            keyboardType="phone-pad"
-            returnKeyType="done"
-          />
-
-          {error ? <Text style={styles.errorText}>{error}</Text> : null}
-        </ScrollView>
-
-        <View style={styles.footer}>
-          <Pressable
-            style={[styles.primaryButton, isSubmitDisabled && styles.buttonDisabled]}
-            onPress={handleSubmit}
-            disabled={isSubmitDisabled}
-            accessibilityRole="button">
-            <Text style={styles.primaryButtonText}>{isSubmitting ? t('common.loading') : t('common.save')}</Text>
-          </Pressable>
-        </View>
-      </KeyboardAvoidingView>
+      <StudentForm
+        formKey={`edit-${studentData.id}`}
+        headerIcon="account-edit-outline"
+        description={t('students.edit_student')}
+        submitLabel={t('common.save')}
+        initialValues={initialValues}
+        onSubmit={handleSubmit}
+        onDirtyChange={setIsDirty}
+      />
     </>
   );
 };
@@ -226,10 +134,6 @@ const EditStudentScreen = () => {
 export default EditStudentScreen;
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: palette.background,
-  },
   centered: {
     flex: 1,
     alignItems: 'center',
@@ -240,46 +144,5 @@ const styles = StyleSheet.create({
   errorTitle: {
     ...typography.titleMedium,
     color: palette.onSurfaceMuted,
-  },
-  scroll: {
-    flex: 1,
-  },
-  content: {
-    padding: spacing.xl,
-    gap: spacing.lg,
-    paddingBottom: spacing.xxl,
-  },
-  errorText: {
-    ...typography.bodySmall,
-    color: palette.error,
-  },
-  footer: {
-    padding: spacing.xl,
-    borderTopWidth: 1,
-    borderTopColor: palette.outlineVariant,
-    backgroundColor: palette.background,
-  },
-  primaryButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.sm,
-    backgroundColor: palette.primary,
-    borderRadius: 16,
-    paddingVertical: spacing.md,
-    shadowColor: palette.primary,
-    shadowOpacity: 0.3,
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 12,
-    elevation: 4,
-  },
-  primaryButtonText: {
-    ...typography.labelLarge,
-    color: palette.onPrimary,
-    fontFamily: 'Lexend-Bold',
-    fontWeight: '700',
-  },
-  buttonDisabled: {
-    opacity: 0.5,
   },
 });
