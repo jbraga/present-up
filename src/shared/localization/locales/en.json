@@ -117,6 +117,8 @@
     "guardian_information": "Guardian Information",
     "discard_changes_confirm": "Discard your changes to this student?",
     "delete_confirm": "Are you sure you want to delete this student?",
+    "max_loaded_title": "Limit reached",
+    "max_loaded_message": "You can load up to {{count}} students.",
     "unknown": "Unknown student"
   },
   "attendance": {
@@ -134,7 +136,7 @@
     "current_month": "Current Month",
     "day": "Day",
     "month": "Month",
-    "generating_report": "Generating monthly report PDF...",
+    "generating_report": "Generating monthly report...",
     "include_classes": "Include Classes",
     "select_all": "Select all",
     "clear": "Clear",
@@ -149,6 +151,18 @@
     "no_classes_day": "There are no classes scheduled for this day.",
     "no_classes_active": "You do not have any active classes.",
     "empty_title": "No attendance data yet",
+    "toast": {
+      "report_not_ready_title": "Report not ready",
+      "report_not_ready_message": "Please wait until the attendance data is loaded.",
+      "no_data_title": "No data",
+      "no_data_message": "There are no attendance records available for this month.",
+      "select_classes_title": "Select classes",
+      "select_classes_message": "Choose at least one class to include in the report.",
+      "report_downloaded_title": "Report downloaded",
+      "report_downloaded_message": "The report was saved on your device.",
+      "report_failed_title": "Report generation failed",
+      "report_failed_message": "Unable to generate the monthly report. Please try again."
+    },
     "statuses": {
       "good_standing": "Good standing",
       "below_threshold": "Below threshold"
@@ -162,14 +176,27 @@
     }
   },
   "report": {
+    "attendance_report": "Attendance Report",
+    "monthly_attendance_report": "Monthly Attendance Report",
+    "app_logo_placeholder": "APP LOGO",
     "enrolled": "Enrolled",
+    "attendance": "Attendance",
     "average_attendance": "Average Attendance",
+    "overall_attendance": "Overall Attendance",
+    "sessions_recorded": "Sessions Recorded",
+    "student_attendance_summary": "Student Attendance Summary",
+    "daily_attendance_logs": "Daily Attendance Logs",
     "student_details": "Student Details",
     "student": "Student",
+    "status": "Status",
+    "notes": "Notes",
     "present": "Present",
     "absent": "Absent",
     "attendance_rate": "Attendance Rate",
     "sessions": "Sessions",
-    "total_sessions": "Total Sessions: {{count}}"
+    "total_sessions": "Total Sessions: {{count}}",
+    "no_data_month": "No data available for this month.",
+    "no_class_logs_month": "No attendance logs for this class in this month.",
+    "no_detailed_logs_month": "No detailed logs available for this month."
   }
 }

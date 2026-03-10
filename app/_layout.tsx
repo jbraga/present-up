@@ -9,6 +9,7 @@ import { useEffect } from 'react';
 import 'react-native-reanimated';
 
 import { AppProviders } from '@application/providers/AppProviders';
+import { ToastProvider } from '@shared/components/ToastProvider';
 import { useColorScheme } from '@shared/hooks/useColorScheme';
 
 SplashScreen.preventAutoHideAsync();
@@ -39,12 +40,14 @@ export default function RootLayout() {
 
   return (
     <AppProviders>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        </Stack>
-        <StatusBar style="auto" />
-      </ThemeProvider>
+      <ToastProvider>
+        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+          <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          </Stack>
+          <StatusBar style="auto" />
+        </ThemeProvider>
+      </ToastProvider>
     </AppProviders>
   );
 }

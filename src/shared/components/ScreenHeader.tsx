@@ -39,7 +39,7 @@ export const ScreenHeader = ({
             <Text style={styles.title}>{title}</Text>
           </View>
         </View>
-        <View style={styles.right}>
+        <View style={[styles.right, eyebrow ? styles.rightWithEyebrow : null]}>
           {actions?.map((action) => (
             <Pressable
               key={action.icon}
@@ -48,12 +48,12 @@ export const ScreenHeader = ({
               accessibilityRole="button"
               accessibilityLabel={action.label}
               hitSlop={4}>
-              <MaterialCommunityIcons name={action.icon} size={24} color={palette.onSurfaceVariant} />
+              <MaterialCommunityIcons name={action.icon} size={24} color={palette.onSurfaceVariant} style={styles.actionIcon} />
             </Pressable>
           ))}
           {showNotificationBell ? (
             <View style={styles.bellContainer}>
-              <MaterialCommunityIcons name="bell-outline" size={24} color={palette.onSurfaceVariant} />
+              <MaterialCommunityIcons name="bell-outline" size={24} color={palette.onSurfaceVariant} style={styles.actionIcon} />
               <View style={styles.bellDot} />
             </View>
           ) : null}
@@ -82,6 +82,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.sm,
   },
+  rightWithEyebrow: {
+    alignSelf: 'flex-end',
+  },
   eyebrow: {
     ...typography.labelMedium,
     color: palette.onSurfaceVariant,
@@ -95,6 +98,7 @@ const styles = StyleSheet.create({
     color: palette.onSurface,
     fontFamily: 'Lexend-SemiBold',
     fontWeight: '600',
+    includeFontPadding: false,
   },
   titleRow: {
     flexDirection: 'row',
@@ -106,7 +110,8 @@ const styles = StyleSheet.create({
     height: 48,
     borderRadius: 24,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
+    paddingTop: spacing.xs,
   },
   bellContainer: {
     width: 48,
@@ -114,7 +119,11 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     backgroundColor: 'rgba(226, 232, 240, 0.3)',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
+    paddingTop: spacing.xs,
+  },
+  actionIcon: {
+    marginTop: 1,
   },
   bellDot: {
     position: 'absolute',

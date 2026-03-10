@@ -30,8 +30,8 @@ const formatMonthLabel = (date: Date) => {
 
 const formatDayLabel = (date: Date) => {
   return new Intl.DateTimeFormat(getActiveLocale(), {
-    weekday: 'short',
-    month: 'short',
+    weekday: 'long',
+    month: 'long',
     day: '2-digit',
     year: 'numeric',
   }).format(date);
@@ -46,16 +46,16 @@ const dayKey = (date: Date) => {
 
 const studentDisplayName = (student: StudentEntity | undefined) => {
   if (!student) {
-    return 'Unknown student';
+    return i18n.t('students.unknown') as string;
   }
 
   return `${student.firstName} ${student.lastName}`.trim();
 };
 
 const statusLabel = (status: string) => {
-  if (status === ATTENDANCE_STATUS.present) return 'Present';
-  if (status === ATTENDANCE_STATUS.absent) return 'Absent';
-  if (status === ATTENDANCE_STATUS.excused) return 'Excused';
+  if (status === ATTENDANCE_STATUS.present) return i18n.t('attendance.mark_present') as string;
+  if (status === ATTENDANCE_STATUS.absent) return i18n.t('attendance.mark_absent') as string;
+  if (status === ATTENDANCE_STATUS.excused) return i18n.t('attendance.mark_excused') as string;
   return status;
 };
 
@@ -126,21 +126,21 @@ export const buildMonthlyReportHtml = ({
       return `
         <section class="class-section">
           <h3>${escapeHtml(entry.className)}</h3>
-          <p class="muted">${i18n.t('classes.instructor')}: ${escapeHtml(entry.instructorName || '-')} | ${i18n.t('report.enrolled')}: ${entry.totalEnrolled} | ${i18n.t('report.average_attendance')}: ${formatPercentage(entry.attendanceRate)}</p>
-          <h4>${i18n.t('report.student_details')}</h4>
+          <p class="muted">${escapeHtml(i18n.t('classes.instructor') as string)}: ${escapeHtml(entry.instructorName || '-')} | ${escapeHtml(i18n.t('report.enrolled') as string)}: ${entry.totalEnrolled} | ${escapeHtml(i18n.t('report.average_attendance') as string)}: ${formatPercentage(entry.attendanceRate)}</p>
+          <h4>${escapeHtml(i18n.t('report.student_details') as string)}</h4>
           <table>
             <thead>
               <tr>
-                <th>${i18n.t('report.student')}</th>
-                <th>${i18n.t('report.present')}</th>
-                <th>${i18n.t('report.absent')}</th>
-                <th>${i18n.t('attendance.mark_excused')}</th>
-                <th>${i18n.t('report.sessions')}</th>
-                <th>${i18n.t('report.attendance_rate')}</th>
+                <th>${escapeHtml(i18n.t('report.student') as string)}</th>
+                <th>${escapeHtml(i18n.t('report.present') as string)}</th>
+                <th>${escapeHtml(i18n.t('report.absent') as string)}</th>
+                <th>${escapeHtml(i18n.t('attendance.mark_excused') as string)}</th>
+                <th>${escapeHtml(i18n.t('report.sessions') as string)}</th>
+                <th>${escapeHtml(i18n.t('report.attendance_rate') as string)}</th>
               </tr>
             </thead>
             <tbody>
-              ${studentRows || `<tr><td colspan="6" class="muted">${i18n.t('students.empty')}</td></tr>`}
+              ${studentRows || `<tr><td colspan="6" class="muted">${escapeHtml(i18n.t('students.empty') as string)}</td></tr>`}
             </tbody>
           </table>
         </section>
@@ -188,9 +188,9 @@ export const buildMonthlyReportHtml = ({
               <table>
                 <thead>
                   <tr>
-                    <th>Student</th>
-                    <th>Status</th>
-                    <th>Notes</th>
+                    <th>${escapeHtml(i18n.t('report.student') as string)}</th>
+                    <th>${escapeHtml(i18n.t('report.status') as string)}</th>
+                    <th>${escapeHtml(i18n.t('report.notes') as string)}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -205,8 +205,8 @@ export const buildMonthlyReportHtml = ({
       return `
         <section class="class-section">
           <h3>${escapeHtml(entry.className)}</h3>
-          <p class="muted">Instructor: ${escapeHtml(entry.instructorName || '-')} | Attendance: ${formatPercentage(entry.attendanceRate)} | Sessions: ${entry.totalSessionsRecorded}</p>
-          ${dailyLogs || '<p class="muted">No attendance logs for this class in this month.</p>'}
+          <p class="muted">${escapeHtml(i18n.t('classes.instructor') as string)}: ${escapeHtml(entry.instructorName || '-')} | ${escapeHtml(i18n.t('report.attendance') as string)}: ${formatPercentage(entry.attendanceRate)} | ${escapeHtml(i18n.t('report.sessions') as string)}: ${entry.totalSessionsRecorded}</p>
+          ${dailyLogs || `<p class="muted">${escapeHtml(i18n.t('report.no_class_logs_month') as string)}</p>`}
         </section>
       `;
     })
@@ -217,7 +217,7 @@ export const buildMonthlyReportHtml = ({
     <html>
       <head>
         <meta charset="UTF-8" />
-        <title>Attendance Report - ${escapeHtml(monthLabel)}</title>
+        <title>${escapeHtml(i18n.t('report.attendance_report') as string)} - ${escapeHtml(monthLabel)}</title>
         <style>
           @page {
             size: A4;
@@ -381,36 +381,36 @@ export const buildMonthlyReportHtml = ({
         <section class="summary-page">
           <header class="summary-header">
             <div>
-              <h1>Monthly Attendance Report</h1>
+              <h1>${escapeHtml(i18n.t('report.monthly_attendance_report') as string)}</h1>
               <p class="muted">${escapeHtml(monthLabel)}</p>
             </div>
-            <div class="logo-placeholder">APP LOGO</div>
+            <div class="logo-placeholder">${escapeHtml(i18n.t('report.app_logo_placeholder') as string)}</div>
           </header>
 
           <section class="summary-stats">
             <article class="stat-card">
-              <p class="stat-label">Classes</p>
+              <p class="stat-label">${escapeHtml(i18n.t('classes.stats.classes') as string)}</p>
               <p class="stat-value">${totalClasses}</p>
             </article>
             <article class="stat-card">
-              <p class="stat-label">Sessions Recorded</p>
+              <p class="stat-label">${escapeHtml(i18n.t('report.sessions_recorded') as string)}</p>
               <p class="stat-value">${totalSessions}</p>
             </article>
             <article class="stat-card">
-              <p class="stat-label">Overall Attendance</p>
+              <p class="stat-label">${escapeHtml(i18n.t('report.overall_attendance') as string)}</p>
               <p class="stat-value">${formatPercentage(overallAttendanceRate)}</p>
             </article>
           </section>
 
           <section>
-            <h2>Student Attendance Summary</h2>
-            ${summarySections || '<p class="muted">No data available for this month.</p>'}
+            <h2>${escapeHtml(i18n.t('report.student_attendance_summary') as string)}</h2>
+            ${summarySections || `<p class="muted">${escapeHtml(i18n.t('report.no_data_month') as string)}</p>`}
           </section>
         </section>
 
         <section class="details-page">
-          <h2>Daily Attendance Logs</h2>
-          ${detailSections || '<p class="muted">No detailed logs available for this month.</p>'}
+          <h2>${escapeHtml(i18n.t('report.daily_attendance_logs') as string)}</h2>
+          ${detailSections || `<p class="muted">${escapeHtml(i18n.t('report.no_detailed_logs_month') as string)}</p>`}
         </section>
       </body>
     </html>

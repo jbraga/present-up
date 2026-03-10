@@ -116,6 +116,8 @@
     "guardian_information": "Información del Tutor",
     "discard_changes_confirm": "¿Descartar los cambios de este estudiante?",
     "delete_confirm": "¿Estás seguro de que quieres eliminar este estudiante?",
+    "max_loaded_title": "Límite alcanzado",
+    "max_loaded_message": "Puedes cargar hasta {{count}} estudiantes.",
     "unknown": "Estudiante desconocido"
   },
   "attendance": {
@@ -133,7 +135,7 @@
     "current_month": "Mes Actual",
     "day": "Día",
     "month": "Mes",
-    "generating_report": "Generando informe mensual en PDF...",
+    "generating_report": "Generando informe mensual...",
     "include_classes": "Incluir Clases",
     "select_all": "Seleccionar todo",
     "clear": "Limpiar",
@@ -148,6 +150,18 @@
     "no_classes_day": "No hay clases programadas para este día.",
     "no_classes_active": "No tienes ninguna clase activa.",
     "empty_title": "Aún no hay datos de asistencia",
+    "toast": {
+      "report_not_ready_title": "Informe no listo",
+      "report_not_ready_message": "Espera a que se carguen los datos de asistencia.",
+      "no_data_title": "Sin datos",
+      "no_data_message": "No hay registros de asistencia disponibles para este mes.",
+      "select_classes_title": "Selecciona clases",
+      "select_classes_message": "Elige al menos una clase para incluir en el informe.",
+      "report_downloaded_title": "Informe descargado",
+      "report_downloaded_message": "El informe se guardó en tu dispositivo.",
+      "report_failed_title": "Error al generar el informe",
+      "report_failed_message": "No se pudo generar el informe. Inténtalo de nuevo."
+    },
     "statuses": {
       "good_standing": "Buen estado",
       "below_threshold": "Por debajo del mínimo"
@@ -161,14 +175,27 @@
     }
   },
   "report": {
+    "attendance_report": "Informe de Asistencia",
+    "monthly_attendance_report": "Informe Mensual de Asistencia",
+    "app_logo_placeholder": "LOGO APP",
     "enrolled": "Matriculados",
+    "attendance": "Asistencia",
     "average_attendance": "Asistencia Media",
+    "overall_attendance": "Asistencia General",
+    "sessions_recorded": "Sesiones Registradas",
+    "student_attendance_summary": "Resumen de Asistencia de Estudiantes",
+    "daily_attendance_logs": "Registros Diarios de Asistencia",
     "student_details": "Detalles de Estudiantes",
     "student": "Estudiante",
+    "status": "Estado",
+    "notes": "Notas",
     "present": "Presente",
     "absent": "Ausente",
     "attendance_rate": "Tasa de Asistencia",
     "sessions": "Sesiones",
-    "total_sessions": "Total de Sesiones: {{count}}"
+    "total_sessions": "Total de Sesiones: {{count}}",
+    "no_data_month": "No hay datos disponibles para este mes.",
+    "no_class_logs_month": "No hay registros de asistencia para esta clase en este mes.",
+    "no_detailed_logs_month": "No hay registros detallados disponibles para este mes."
   }
 }

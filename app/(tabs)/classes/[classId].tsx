@@ -2,7 +2,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Alert, Platform, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Platform, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useAttendanceSummary } from '@features/attendance/hooks/useAttendanceSummary';
@@ -17,6 +17,7 @@ import { useStudentsByIds } from '@features/students/hooks/useStudentsByIds';
 import { ConfirmationDialog } from '@shared/components/ConfirmationDialog';
 import { SearchInput } from '@shared/components/SearchInput';
 import { SelectionToolbar } from '@shared/components/SelectionToolbar';
+import { useToast } from '@shared/components/ToastProvider';
 
 import { palette, shape, spacing, typography } from '@theme/tokens';
 
@@ -54,6 +55,7 @@ const DAY_SHORT_KEY_BY_DAY: Record<(typeof CLASS_SCHEDULE_DAYS)[number], string>
 const ClassDetailScreen = () => {
   const params = useLocalSearchParams<{ classId?: string | string[] }>();
   const { t } = useTranslation();
+  const { showToast } = useToast();
   const router = useRouter();
   const classIdParam = params.classId;
   const classId = Array.isArray(classIdParam) ? classIdParam[0] : classIdParam ?? null;
@@ -169,7 +171,11 @@ const ClassDetailScreen = () => {
       setSelectedStudentIds(new Set());
       setRemoveDialogOpen(false);
     } catch {
-      Alert.alert(t('common.error'), t('common.error'));
+      showToast({
+        type: 'error',
+        title: t('common.error'),
+        message: t('common.error')
+      });
     }
   };
 

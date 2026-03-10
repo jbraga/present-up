@@ -116,6 +116,8 @@
     "guardian_information": "Informações do Responsável",
     "discard_changes_confirm": "Descartar as alterações deste aluno?",
     "delete_confirm": "Tem certeza que deseja excluir este aluno?",
+    "max_loaded_title": "Limite atingido",
+    "max_loaded_message": "Você pode carregar até {{count}} alunos.",
     "unknown": "Aluno desconhecido"
   },
   "attendance": {
@@ -133,7 +135,7 @@
     "current_month": "Mês Atual",
     "day": "Dia",
     "month": "Mês",
-    "generating_report": "Gerando relatório mensal em PDF...",
+    "generating_report": "Gerando relatório mensal...",
     "include_classes": "Incluir Turmas",
     "select_all": "Selecionar tudo",
     "clear": "Limpar",
@@ -148,6 +150,18 @@
     "no_classes_day": "Não há turmas programadas para este dia.",
     "no_classes_active": "Você não tem nenhuma turma ativa.",
     "empty_title": "Ainda não há dados de chamada",
+    "toast": {
+      "report_not_ready_title": "Relatório não pronto",
+      "report_not_ready_message": "Aguarde até que os dados de chamada sejam carregados.",
+      "no_data_title": "Sem dados",
+      "no_data_message": "Não há registros de chamada disponíveis para este mês.",
+      "select_classes_title": "Selecione turmas",
+      "select_classes_message": "Escolha pelo menos uma turma para incluir no relatório.",
+      "report_downloaded_title": "Relatório baixado",
+      "report_downloaded_message": "O relatório foi salvo no seu dispositivo.",
+      "report_failed_title": "Falha ao gerar relatório",
+      "report_failed_message": "Não foi possível gerar o relatório. Tente novamente."
+    },
     "statuses": {
       "good_standing": "Situação regular",
       "below_threshold": "Abaixo do mínimo"
@@ -161,14 +175,27 @@
     }
   },
   "report": {
+    "attendance_report": "Relatório de Chamada",
+    "monthly_attendance_report": "Relatório Mensal de Chamada",
+    "app_logo_placeholder": "LOGO APP",
     "enrolled": "Matriculados",
+    "attendance": "Presença",
     "average_attendance": "Média de Presença",
+    "overall_attendance": "Presença Geral",
+    "sessions_recorded": "Aulas Registradas",
+    "student_attendance_summary": "Resumo de Presença dos Alunos",
+    "daily_attendance_logs": "Registros Diários de Chamada",
     "student_details": "Detalhes de Alunos",
     "student": "Aluno",
+    "status": "Status",
+    "notes": "Observações",
     "present": "Presente",
     "absent": "Faltou",
     "attendance_rate": "Taxa de Presença",
     "sessions": "Aulas",
-    "total_sessions": "Total de Aulas: {{count}}"
+    "total_sessions": "Total de Aulas: {{count}}",
+    "no_data_month": "Não há dados disponíveis para este mês.",
+    "no_class_logs_month": "Não há registros de chamada para esta turma neste mês.",
+    "no_detailed_logs_month": "Não há registros detalhados disponíveis para este mês."
   }
 }

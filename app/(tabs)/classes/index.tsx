@@ -1,7 +1,7 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { Alert, Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -17,12 +17,14 @@ import { ConfirmationDialog } from '@shared/components/ConfirmationDialog';
 import { ScreenHeader } from '@shared/components/ScreenHeader';
 import { SelectionToolbar } from '@shared/components/SelectionToolbar';
 import { StatCard } from '@shared/components/StatCard';
+import { useToast } from '@shared/components/ToastProvider';
 import { palette, spacing } from '@theme/tokens';
 import { useTranslation } from 'react-i18next';
 
 const ClassesListScreen = () => {
   const router = useRouter();
   const { t } = useTranslation();
+  const { showToast } = useToast();
   const queryClient = useQueryClient();
   const [selectedClassIds, setSelectedClassIds] = useState<Set<string>>(new Set());
   const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -76,9 +78,13 @@ const ClassesListScreen = () => {
       setSelectedClassIds(new Set());
       setDeleteDialogOpen(false);
     } catch {
-      Alert.alert(t('common.error'), t('common.error'));
+      showToast({
+        type: 'error',
+        title: t('common.error'),
+        message: t('common.error')
+      });
     }
-  }, [selectedClassIds, deleteClassesMutation, t]);
+  }, [selectedClassIds, deleteClassesMutation, showToast, t]);
 
   const handleEditSelected = useCallback(() => {
     if (selectedClassIds.size !== 1) return;

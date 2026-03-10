@@ -4,7 +4,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import { memo, useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Alert, FlatList, Pressable, RefreshControl, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, Pressable, RefreshControl, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { studentQueryKeys } from '@features/students/api/queryKeys';
@@ -15,6 +15,7 @@ import { ConfirmationDialog } from '@shared/components/ConfirmationDialog';
 import { ScreenHeader } from '@shared/components/ScreenHeader';
 import { SearchInput } from '@shared/components/SearchInput';
 import { SelectionToolbar } from '@shared/components/SelectionToolbar';
+import { useToast } from '@shared/components/ToastProvider';
 import { palette, shape, spacing, typography } from '@theme/tokens';
 
 
@@ -92,6 +93,7 @@ const StudentsScreen = () => {
   const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const hasScrolled = useRef(false);
   const flatListRef = useRef<FlatList>(null);
+  const { showToast } = useToast();
 
   const studentListQuery = useStudentList(query);
   const studentService = useStudentService();
@@ -136,9 +138,13 @@ const StudentsScreen = () => {
       setSelectedStudentIds(new Set());
       setDeleteDialogOpen(false);
     } catch {
-      Alert.alert(t('common.error'), t('common.error'));
+      showToast({
+        type: 'error',
+        title: t('common.error'),
+        message: t('common.error')
+      });
     }
-  }, [selectedStudentIds, deleteStudentsMutation, t]);
+  }, [selectedStudentIds, deleteStudentsMutation, showToast, t]);
 
   const handleEditSelected = useCallback(() => {
     if (selectedStudentIds.size !== 1) return;
@@ -156,18 +162,18 @@ const StudentsScreen = () => {
     const currentCount = data.length;
     
     if (currentCount >= MAX_STUDENTS_LOADED) {
-      Alert.alert(
-        t('common.error'),
-        t('common.search'),
-        [{ text: t('common.done') }]
-      );
+      showToast({
+        type: 'info',
+        title: t('students.max_loaded_title'),
+        message: t('students.max_loaded_message', { count: MAX_STUDENTS_LOADED })
+      });
       return;
     }
     
     if (hasScrolled.current && studentListQuery.hasNextPage && !studentListQuery.isFetchingNextPage) {
       studentListQuery.fetchNextPage();
     }
-  }, [studentListQuery, data.length, t]);
+  }, [studentListQuery, data.length, showToast, t]);
 
   const handleScroll = useCallback(() => {
     hasScrolled.current = true;

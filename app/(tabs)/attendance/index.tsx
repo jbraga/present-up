@@ -1,7 +1,7 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Alert, Modal, Pressable, RefreshControl, ScrollView, StyleSheet, Text, useWindowDimensions, View, type LayoutChangeEvent } from 'react-native';
+import { ActivityIndicator, Modal, Pressable, RefreshControl, ScrollView, StyleSheet, Text, useWindowDimensions, View, type LayoutChangeEvent } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AttendanceTimelineCard } from '@features/attendance/components/AttendanceTimelineCard';
@@ -15,6 +15,7 @@ import { useStudentsByIds } from '@features/students/hooks/useStudentsByIds';
 import { StudentEntity } from '@features/students/types/student';
 import { ScreenHeader } from '@shared/components/ScreenHeader';
 import { SearchInput } from '@shared/components/SearchInput';
+import { useToast } from '@shared/components/ToastProvider';
 import { palette, shape, spacing, typography } from '@theme/tokens';
 
 const AttendanceScreen = () => {
@@ -51,6 +52,7 @@ const AttendanceScreen = () => {
   const [calendarMonth, setCalendarMonth] = useState(() => new Date());
   const [isReportClassModalOpen, setReportClassModalOpen] = useState(false);
   const [selectedReportClassIds, setSelectedReportClassIds] = useState<string[]>([]);
+  const { showToast } = useToast();
 
   const selectedDate = useMemo(() => parseDateKey(selectedDateKey), [selectedDateKey]);
   const timeline = useDailyTimeline(selectedDate);
@@ -169,18 +171,26 @@ const AttendanceScreen = () => {
     }
 
     if (monthlyData.isLoading) {
-      Alert.alert('Report not ready', 'Please wait until the monthly attendance data is loaded.');
+      showToast({
+        type: 'info',
+        title: t('attendance.toast.report_not_ready_title'),
+        message: t('attendance.toast.report_not_ready_message')
+      });
       return;
     }
 
     if (monthlyData.entries.length === 0) {
-      Alert.alert('No data', 'There are no attendance records available for this month.');
+      showToast({
+        type: 'info',
+        title: t('attendance.toast.no_data_title'),
+        message: t('attendance.toast.no_data_message'),
+      });
       return;
     }
 
     setSelectedReportClassIds(monthlyData.entries.map((entry) => entry.classId));
     setReportClassModalOpen(true);
-  }, [isGeneratingReport, monthlyData.entries, monthlyData.isLoading]);
+  }, [isGeneratingReport, monthlyData.entries, monthlyData.isLoading, showToast, t]);
 
   const handleToggleReportClass = useCallback((classId: string) => {
     setSelectedReportClassIds((previousIds) => {
@@ -206,18 +216,30 @@ const AttendanceScreen = () => {
     }
 
     if (monthlyData.isLoading) {
-      Alert.alert('Report not ready', 'Please wait until the monthly attendance data is loaded.');
+      showToast({
+        type: 'info',
+        title: t('attendance.toast.report_not_ready_title'),
+        message: t('attendance.toast.report_not_ready_message'),
+      });
       return;
     }
 
     if (monthlyData.entries.length === 0) {
-      Alert.alert('No data', 'There are no attendance records available for this month.');
+      showToast({
+        type: 'info',
+        title: t('attendance.toast.no_data_title'),
+        message: t('attendance.toast.no_data_message'),
+      });
       return;
     }
 
     const selectedEntries = monthlyData.entries.filter((entry) => selectedReportClassIds.includes(entry.classId));
     if (selectedEntries.length === 0) {
-      Alert.alert('Select classes', 'Choose at least one class to include in the report.');
+      showToast({
+        type: 'info',
+        title: t('attendance.toast.select_classes_title'),
+        message: t('attendance.toast.select_classes_message'),
+      });
       return;
     }
 
@@ -231,10 +253,18 @@ const AttendanceScreen = () => {
       setReportClassModalOpen(false);
 
       if (outputMode === 'download' && reportUri) {
-        Alert.alert('Report downloaded', 'The PDF report was generated and saved on your device.');
+        showToast({
+          type: 'success',
+          title: t('attendance.toast.report_downloaded_title'),
+          message: t('attendance.toast.report_downloaded_message')
+        });
       }
     } catch {
-      Alert.alert('Report generation failed', 'Unable to generate the monthly PDF report. Please try again.');
+      showToast({
+        type: 'error',
+        title: t('attendance.toast.report_failed_title'),
+        message: t('attendance.toast.report_failed_message')
+      });
     }
   }, [
     generateMonthlyReport,
@@ -243,7 +273,9 @@ const AttendanceScreen = () => {
     monthlyData.isLoading,
     selectedReportClassIds,
     selectedMonth,
+    showToast,
     studentLookup,
+    t,
   ]);
 
   const headerActions = useMemo(
