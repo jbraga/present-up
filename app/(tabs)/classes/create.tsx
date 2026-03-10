@@ -613,12 +613,12 @@ const styles = StyleSheet.create({
   },
   scheduleTimeText: {
     ...typography.labelSmall,
-    color: palette.onSurfaceMuted,
+    color: palette.onSurfaceVariant,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
   scheduleTimePlaceholder: {
-    color: palette.outlineVariant,
+    color: palette.onSurfaceMuted,
   },
   scheduleTimeSeparator: {
     ...typography.labelSmall,
