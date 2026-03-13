@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "present-up",
+    "name": "PresentUp",
     "slug": "present-up",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -9,9 +9,13 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.civile.presentup",
+      "buildNumber": "1"
     },
     "android": {
+      "package": "com.civile.presentup",
+      "versionCode": 1,
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -31,11 +35,11 @@
         "expo-splash-screen",
         {
           "image": "./assets/images/splash-icon.png",
-          "imageWidth": 200,
+          "imageWidth": 1024,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff",
+          "backgroundColor": "#1848a8",
           "dark": {
-            "backgroundColor": "#000000"
+            "backgroundColor": "#1848a8"
           }
         }
       ],
@@ -47,7 +51,17 @@
       "reactCompiler": true
     },
     "extra": {
-      "environment": "development"
+      "environment": "development",
+      "router": {},
+      "eas": {
+        "projectId": "b4fbf568-2a5f-4611-9e13-3158285f5443"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/b4fbf568-2a5f-4611-9e13-3158285f5443"
     }
   }
 }
